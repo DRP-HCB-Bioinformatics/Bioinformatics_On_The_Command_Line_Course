@@ -1,0 +1,294 @@
+---
+title: "Working with files"
+output: 
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+In this section you will learn how to explore and manipulate files in bash using simple commands, and compound commands using pipes.
+
+<br>
+
+### Exploring files
+
+----
+
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key Points</h2>
+* Regular files in Linux can be classified as text files, which contain human readable text, and binary files, that contain data that is not human readable
+* The `cat` command can be used to show the contents of a file
+    * The `less` command allows you to page through a large file as if it were a `man` page
+* The `head` and `tail` commands can be used to show the first or last few lines of a file
+    * These can be useful for large text files
+* The `wc -l` command counts the number of lines in a file
+* The `grep` command allows you to filter a text file
+* Text files can be *compressed* using the `gzip` command, which converts them to a binary format that takes up less space
+    * Many of the above commands for working with text files have equivalents for gzipped files
+    * These include `zcat`, `zless`, and `zgrep`
+</div>
+
+<br>
+
+The following example demonstrates how we can explore text files:
+
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+1 directory, 5 files
+[USERNAME]@bifx-core2:~/course$ cat bioinformatics_on_the_command_line_files/README
+This archive contains reference files for the 'Introduction to Bioinformatics on the Command Line' course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+
+- raw_yeast_rnaseq_data.fastq: This is a file containing 10,000 raw reads taken from a yeast RNA-Seq experiment
+- yeast_genome.fasta: This file contains the reference genome sequence for yeast (EF4) in fasta format
+- yeast_genes.bed: This file contains the genomic co-ordinates of yeast genes in bed format
+[USERNAME]@bifx-core2:~/course$ less bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+...
+<q>
+[USERNAME]@bifx-core2:~/course$ head -5 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+>I
+CCACACCACACCCACACACCCACACACCACACCACACACCACACCACACCCACACACACA
+CATCCTAACACTACCCTAACACAGCCCTAATCTAACCCTGGCCAACCTGTCTCTCAACTT
+ACCCTCCATTACCCTGCCTCCACTCGTTACCCTGTCCCATTCAACCATACCACTCCGAAC
+CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
+[USERNAME]@bifx-core2:~/course$ tail -5 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+GTGTTTGTTGCACGGCAGTAGCGAGAGACAAGTGGGAAAGAGTAGGATAAAAAGACAATC
+TATAAAAAGTAAACATAAAATAAAGGTAGTAAGTAGCTTTTGGTTGAACATCCGGGTAAG
+AGACAACAGGGCTTGGAGGAGACGTACATGAGGGCTATTTAGGGCTATTTAGGGCTATGT
+AGAAGTGTTGTAGGGCTAAAGAACAGGGTTTCATTTTCATTTTTTTTTTTTAATTTCGGT
+CAGAAA
+[USERNAME]@bifx-core2:~/course$ wc -l bioinformatics_on_the_command_line_files/yeast_genes.bed
+7126 bioinformatics_on_the_command_line_files/yeast_genes.bed
+[USERNAME]@bifx-core2:~/course$ grep format bioinformatics_on_the_command_line_files/README
+This archive contains reference files for the 'Introduction to Bioinformatics on the Command Line' course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+- yeast_genome.fasta: This file contains the reference genome sequence for yeast (EF4) in fasta format
+- yeast_genes.bed: This file contains the genomic co-ordinates of yeast genes in bed format
+[USERNAME]@bifx-core2:~/course$ grep -v format bioinformatics_on_the_command_line_files/README
+
+- raw_yeast_rnaseq_data.fastq: This is a file containing 10,000 raw reads taken from a yeast RNA-Seq experiment
+[USERNAME]@bifx-core2:~/course$ grep -c -E '^>' bioinformatics_on_the_command_line_files/yeast_genome.fasta
+17
+[USERNAME]@bifx-core2:~/course$ gzip -k bioinformatics_on_the_command_line_files/yeast_genome.fasta
+[USERNAME]@bifx-core2:~/course$ ls -lh bioinformatics_on_the_command_line_files/yeast_genome.fasta*
+-rw-rw-r-- 1 [USERNAME] [USERNAME]  12M Nov 12 12:38 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+-rw-rw-r-- 1 [USERNAME] [USERNAME] 3.7M Nov 12 12:38 bioinformatics_on_the_command_line_files/yeast_genome.fasta.gz
+[USERNAME]@bifx-core2:~/course$ zgrep -c -E '^>' bioinformatics_on_the_command_line_files/yeast_genome.fasta.gz
+17
+[USERNAME]@bifx-core2:~/course$
+```
+
+*Note:* The `-E` flag in `grep` allows you to use a *regular expression* to specify a pattern that `grep` will look for rather than a fixed string. Conceptually, regular expressions are similar to glob patterns, although their syntax is different. Some characters have a special meaning in regular expressions. For example:
+
++ `^` represents the start of a string
++ `$` represents the end of a string
++ `.*` represents a sequence of zero or more characters
++ `.+` represents a sequence of one or more characters
+
+<br>
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+How would you check that every line of the 'yeast_genes.bed' file starts with the string 'chr' without looking through the whole file?
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+Run `grep -v -c -E '^chr' bioinformatics_on_the_command_line_files/yeast_genes.bed` to count the number of lines that don't start with 'chr'. We can see that this is zero, so every line must start with 'chr'.
+</div>
+</details>
+</div>
+<br>
+
+### Shell redirection
+
+----
+
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key Points</h2>
+* The shell can manage where programs receive inputs from and where they send outputs to
+* It provides three I/O channels for programs to use. These are:
+    * **Standard input**, or **STDIN**, which provides input to the program
+    * **Standard output**, or **STDOUT**, which receives output from the program
+    * **Standard error**, or **STDERR**, which receives error messages from the program
+* Program authors don't have to use these I/O channels, but most command line tools designed for Linux, such as the GNU coreutils, do use them
+* By default, **STDIN** comes from the keyboard, and **STDOUT** and **STDERR** go to the terminal, but each of these channels can be redirected
+    * `>` redirects **STDOUT** to an output file, overwriting its contents
+    * `>>` redirects **STDOUT** to an output file, appending to its contents
+    * `2>` redirects **STDERR** to an output file, overwriting its contents
+    * `2>>` redirects **STDERR** to an output file, appending to its contents
+    * `<` reads each line from an input file and feeds it to **STDIN**
+    * `2>&1` redirects **STDERR** to **STDOUT**
+</div>
+
+<br>
+
+The following example demonstrates how shell redirection works:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ echo zero > output.txt
+[USERNAME]@bifx-core2:~/course$ cat < output.txt
+zero
+[USERNAME]@bifx-core2:~/course$ echo one > output.txt
+[USERNAME]@bifx-core2:~/course$ cat < output.txt
+one
+[USERNAME]@bifx-core2:~/course$ echo two >> output.txt
+[USERNAME]@bifx-core2:~/course$ cat < output.txt
+one
+two
+[USERNAME]@bifx-core2:~/course$ cat bioinformatics_on_the_command_line_files/README > cat_readme.out 2> cat_readme.err
+[USERNAME]@bifx-core2:~/course$ head -2 cat_readme.*
+==> cat_readme.err <==
+
+==> cat_readme.out <==
+This archive contains reference files for the 'Introduction to Bioinformatics on the Command Line' course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+
+[USERNAME]@bifx-core2:~/course$ zcat bioinformatics_on_the_command_line_files/README > zcat_readme.out 2> zcat_readme.err
+[USERNAME]@bifx-core2:~/course$ head -2 zcat_readme.*
+==> zcat_readme.err <==
+
+gzip: bioinformatics_on_the_command_line_files/README: not in gzip format
+
+==> zcat_readme.out <==
+[USERNAME]@bifx-core2:~/course$ zcat bioinformatics_on_the_command_line_files/README > zcat_readme.all 2>&1
+[USERNAME]@bifx-core2:~/course$ cat zcat_readme.all
+
+gzip: bioinformatics_on_the_command_line_files/README: not in gzip format
+[USERNAME]@bifx-core2:~/course$ rm -i *cat_readme.* output.txt
+rm: remove regular empty file 'cat_readme.err'? y
+rm: remove regular file 'cat_readme.out'? y
+rm: remove regular file 'zcat_readme.all'? y
+rm: remove regular file 'zcat_readme.err'? y
+rm: remove regular empty file 'zcat_readme.out'? y
+rm: remove regular file 'output.txt'? y
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+<br>
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+`cat output.txt` and `cat < output.txt` do the same thing, but `echo output.txt` and `echo < output.txt` don't. Why?
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+The `cat` command opens the file given as an argument and processes the lines one by one, and it treats lines received from **STDIN** in the same way.  Many programs work this way, but some, like `echo` don't. `echo` simply ignores what comes in from **STDIN**.
+</div>
+</details>
+</div>
+<br>
+
+### Creating compound commands using pipes
+
+----
+
+
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key Points</h2>
+* Because the shell provides standard input and output channels, it is possible to chain together simple commands to perform complex tasks
+* This can be done using a 'pipe', represented by the pipe character `|`
+</div>
+
+<br>
+
+So far we have discussed simple commands, which consist of a single command name followed by some options and arguments. However, a lot of the flexibility of the tools accessible via bash comes from the ability to combine them to form compound commands, using pipes. This allows the user to perform complex tasks by joining together simple commands.
+
+*Motivating example:* How do you count how many of the first 40 lines in a FASTQ file contain the sequence ACTG?
+
+Here's how you could do it using simple commands:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq > first_40_lines.tmp
+[USERNAME]@bifx-core2:~/course$ grep -c ACTG first_40_lines.tmp
+5
+[USERNAME]@bifx-core2:~/course$ rm -i first_40_lines.tmp
+rm: remove regular file 'first_40_lines.tmp'? y
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+Here's how you can do it in a single command using a pipe:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq | grep -c ACTG
+5
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+Pipes are particularly useful for working with large files, as they remove the need to create large intermediate files, which may take up space. They can also save time, as commands can sometimes start working on the data produced by commands preceding them in the pipeline before they have finished running, and in some cases preceding commands can be terminated early if further outputs are no longer needed.
+
+Because some programs only operate on files and do not accept input from **STDIN**, it is sometimes useful to present the output of one program to another program as if it were a file. This can be done using the `<()` notation. For example, the command shown above could also be written using this notation as follows:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ grep -c ACTG <(head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq)
+5
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+<br>
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge</h2>
+We can find how long it takes to find the first line in '/homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa' that countains the character 'A' by writing all matches to a temporary file and then finding the first line using `head` as follows: 
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ time grep A /homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa > grepA.tmp
+
+real	0m36.182s
+user	0m7.831s
+sys	    0m6.377s
+[USERNAME]@bifx-core2:~/course$ time head -1 grepA.tmp
+gcttcagaataatcatattattctcaaattttgtatcaatataaaaaaaA
+
+real	0m0.008s
+user	0m0.001s
+sys	    0m0.003s
+[USERNAME]@bifx-core2:~/course$ rm -ri grepA.tmp
+rm: remove regular file 'grepA.tmp'? y
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+We can see that the operation takes just over 36 seconds. Using the `time` command, find the length of time it takes to perform the same task using a pipe. Is there much of a difference? Why? 
+
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+To find out how long it takes to find the line with a pipe you can do the following:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ time grep A /homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa | head -1
+gcttcagaataatcatattattctcaaattttgtatcaatataaaaaaaA
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.012s
+``` 
+
+As we can see the operation completes in about 0.01 seconds, so using a pipe is considerably faster. This is because the pipeline stops when it has found the first match, so the `grep` command doesn't have to go through the whole file.
+
+*Note:* it is actually possible to find the first match quickly using a single grep command and no pipe, by using the `-m` option in grep.
+</div>
+</details>
+
+</div>
+<br>
+

@@ -1,0 +1,198 @@
+---
+title: "Working with processes"
+output: 
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+In this section you will learn how to work with processes and jobs in bash.
+
+<br>
+
+## Exploring processes
+
+----
+
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key points</h2>
+* A running program is known as a **process**. On a modern computer many different processes can run at once
+* Processes are managed by the **operating system** (Linux in our case)
+    * The operating system controls how the computer's resources, such as CPU and disk access, are allocated to the different processes
+</div>
+<br>
+
+There are a few different ways to explore the processes running on your computer:
+
++ `ps` shows the processes you are currently running
++ `top` shows all active processes
++ `htop` gives a user friendly representation of the processes currently running along with CPU and memory usage on the server
++ `pgrep` finds the process IDs of all running instances of a particular program
+
+We can learn a lot about processes by looking at the output of these commands. For example, if we run the command `ps -fly` we get something like this:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ ps -fly
+S UID         PID   PPID   C  PRI  NI   RSS   SZ    WCHAN  STIME TTY          TIME CMD
+S [USERNAME]  35269 35244  0  80   0    39296 13648 wait   Nov10 pts/5    00:00:04 -bash
+R [USERNAME]  44935 35269  0  80   0    3328  8822  -      10:11 pts/5    00:00:00 ps -fly
+...
+```
+
+By looking at the output columns, we can see the following:
+
++ Each process has an *owner*, whose username is shown in the *UID* column
++ Each process has a unique *ID*, shown in the *PID* column
++ Each process also has a single *parent process*, whose ID is shown in the *PPID* column
+    + The parent of a process is the process that started it. In our case, the `ps -fly` process was started by the `bash` process
+    + You can see this by observing that the *PPID* of the `ps -fly` process is the same as the *PID* of the `bash` process
+
+<br>
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+Use `htop` to find the following:
+<ul>
+<li>How many cores does bifx-core2 have?</li>
+<li>How much memory does it have?</li>
+<li>What is the parent process of the `htop` process?</li>
+</ul>
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+Run `htop -u [USERNAME]` to start `htop` and display only your own processes. At the top of the `htop` screen there is a bar chart style representation of each of the cores on the server, showing how busy each core is. bifx-core2 has 64 cores. There is also a bar entitled *Mem*, with the total memory shown to its right. bifx-core2 has 504G. To find the parent process of `htop` press <kbd>F5</kbd> to see a tree view. Then press <kbd>F3</kbd> and search for `htop`. The parent process is `bash`, visible above the `htop` process. 
+</div>
+</details>
+</div>
+<br>
+
+
+
+## Job control
+
+----
+
+<br>
+<div class="key-points">
+<h2><i class="fas fa-thumbtack"></i> Key points</h2>
+* A 'job' is a process that is managed by the bash shell, and is a child of the bash process
+    * In general, whenever you run a command in bash, it starts a job
+* The shell keeps track of all of the jobs that it's currently managing
+* Running a command starts it as a foreground job
+    * When a job is run in the foreground you are not shown another command prompt until the job completes.
+* Running a command followed by *&* starts it as a background job
+    * When a job is run in the background you are shown another command prompt immediately.
+</div>
+<br>
+
+
+### Controlling processes and jobs
+
+----
+
+In UNIX based systems, jobs and processes can be paused or stopped completely by sending them 'signals'. There are many signals that you can send (type `kill -l` to list them all). Arguably the most important are the following:
+
++ SIGINT, SIGHUP, and SIGTERM, which request that the process should terminate gracefully
+    + Not all programs respond to these signals. For instance, `vim` ignores the SIGINT signal
++ SIGKILL, which terminates the process immediately
+    + This should only be used as a last resort, as processes that are sent this signal will not be able close gracefully
++ SIGTSTP, which suspends the process, and SIGCONT, which restarts a suspended process
+
+<br>
+
+#### Sending signals to jobs or processes
+
+There are many ways to send signals to jobs. Here are some particularly useful ones:
+
++ The `kill` command sends a specified signal to an individual process or job by ID
+    + `jobs` shows you the names and IDs of all of the jobs that you are currently running in your shell
+    + You can also use `killall` to send a signal to all running instances of a given program, but this is generally a bad idea. It is better to use `htop` or a combination of `pgrep` and `kill` to ensure you only send a signal to the process that you want to
++ Pressing <kbd>f9</kbd> in `htop` also allows you to send the signal of your choice to the selected process
+
+There are also some useful keyboard shortcuts to send signals to jobs
+
++ <kbd>Ctrl+c</kbd> sends the SIGINT signal to the current foreground job
++ <kbd>Ctrl+z</kbd> sends the SIGTSTP signal to the current foreground job
+
+<br>
+
+#### Restarting jobs
+
+Once a job has been stopped, it can be restarted in a number of ways:
+
++ `fg [job ID]` restarts a job in the foreground
++ `bg [job ID]` restarts a job in the background
++ Send the SIGCONT signal to the job using `kill -CONT [job or process ID]` or `htop`
+
+<br>
+
+#### Disowing jobs
+
+By default, jobs you start in your shell are 'owned' by your current shell session. As a result, on some servers the job might be terminated when you exit the shell (depending on how bash is configured).  You can ensure that this does not happen by 'disowning' the job.
+
++ `disown [job ID]` disowns a currently running job
+  + once a job has been disowned by the shell, it will disappear from the shell's job table. The process will become a child of the top level process 
++ `nohup` can be used to start a job that will definitely not be sent a SIGHUP signal when the shell is closed
+    + Using `nohup` also diverts any output that would have gone to the shell to a file called *nohup.out*
+
+The following example shows how to move a foreground job to the background and disown it:
+
+```{bash eval=F}
+[USERNAME]@bifx-core2:~/course$ sleep 10000
+<Ctrl+z>
+^Z
+[1]+  Stopped                 sleep 10000
+[USERNAME]@bifx-core2:~/course$ bg %1
+[1]+ sleep 10000 &
+[USERNAME]@bifx-core2:~/course$ jobs
+[1]+  Running                 sleep 10000 &
+[USERNAME]@bifx-core2:~/course$ disown %1
+[USERNAME]@bifx-core2:~/course$ jobs
+[USERNAME]@bifx-core2:~/course$ ps
+  PID TTY          TIME CMD
+29621 pts/1    00:00:00 sleep
+37480 pts/1    00:00:00 bash
+40951 pts/1    00:00:00 ps
+[USERNAME]@bifx-core2:~/course$ 
+```
+
+The example shows that when the `sleep 10000` job is disowned it is removed from the `jobs` list, but the process keeps running.
+
+<br>
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+How could you terminate a foreground job without using <kbd>Ctrl+c</kbd>?
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+One way would be to pause the job with <kbd>Ctrl+z</kbd>, and then use `kill -INT [job ID]` to send a SIGINT signal to the job
+</div>
+</details>
+</div>
+<br>
+
+<div class="challenge">
+<h2><i class="fas fa-pencil-alt"></i> Challenge:</h2>
+How could you restart a stopped job that has been disowned?
+<details>
+<summary></summary>
+<div class="solution">
+<h2><i class="far fa-eye"></i> Solution:</h2>
+You could use `htop` or `ps` to find the process IDs of the stopped processes, and then use `kill -CONT [process ID]` to send a SIGCONT signal to those processes.
+</div>
+</details>
+</div>
+<br>

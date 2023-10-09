@@ -1,0 +1,4 @@
+Type: project
+Description: Bioinformatics on the command line training course.
+Depends:
+    rmarkdown

@@ -1,0 +1,21 @@
+---
+title: "Introduction to Bioinformatics on the Command Line"
+author:  "WCB Bioinformatics Core Facility"
+output:
+  html_document:
+    fig_width: 1
+---
+
+----
+
+This is the homepage for the 'Introduction to Bioinformatics on the Command Line' course from the WCB Bioinformatics Core Facility at the University of Edinburgh.
+
+<br>
+
+![](images/CELL_BIOLOGY_RGB.png){ width=50% }
+
+<br>
+
+----
+
+For more information contact [Hywel Dunn-Davies](mailto:hywel.dunn-davies@ed.ac.uk).

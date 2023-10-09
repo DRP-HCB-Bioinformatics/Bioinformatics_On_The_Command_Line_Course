@@ -1,0 +1,74 @@
+---
+title: "Introduction"
+output: 
+  html_document:
+    df_print: paged
+    css: "style.css"
+---
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(warning=FALSE, message=FALSE)
+```
+
+----
+
+This introductory course will teach you the basics of performing bioinformatics data analysis on the command line using the [GNU bash shell](https://www.gnu.org/software/bash/). It covers the following topics:
+
+- Getting started with bash
+- Running commands in bash
+- Navigating the file system
+- Managing files, directories and links
+- Managing processes
+- Bioinformatics data analysis with bash
+- Creating bash scripts for reproducible data analysis
+
+<br>
+
+### The GNU bash shell
+
+----
+
+The [GNU bash shell](https://www.gnu.org/software/bash/) is one of a range of command line shells that are available for UNIX based operating systems. Modern alternatives include [ZSH](https://www.zsh.org/) and the [fish shell](http://fishshell.com/). Each of these shells provides a high level interface to UNIX based operating systems such as GNU/Linux.
+
+Command line shells such as bash provide similar functionality to graphical user interfaces (GUIs), such as those seen in [Microsoft Windows](https://www.microsoft.com/en-gb/windows) and [Mac OS X](https://www.apple.com/macos/big-sur/), allowing users to do perform tasks such as navigating the file system, running programs, and managing processes and system settings.
+
+
+<br>
+
+### Advantages of using a command line shell
+
+----
+
+While command line shells such as bash are not as intuitive for beginners as the point and click interfaces offered by GUI shells, they offer a number of advantages which are very useful for Bioinformatics data analysis:
+
+* **Flexibility**
+    + you can log in and work on remote machines that may not have a graphical interface or remote desktop server installed
+    + you can use bioinformatics tools that don't have a GUI
+* **Reliability**
+    + Command line interfaces take up less memory and system resources than graphical interfaces
+    + Because of the complexity of GUI programming, tools with GUIs are more likely to contain bugs
+* **Convenience**
+    + Programs and documentation can be accessed easily 
+    + bash keeps a history of the commands you run and makes it easy to repeat commands
+* **Power**
+    + simple programs can be combined to perform more complex functions
+    + you can create scripts for data analysis, without the overhead of creating a GUI
+
+<br/>
+
+### The UNIX philosophy
+
+----
+
+The programs that you will use to interact with the computer using the GNU bash shell have been designed according to the [UNIX philosophy](https://en.wikipedia.org/wiki/Unix_philosophy), which has been summarised as follows:
+
++ Write programs that do one thing and do it well
++ Write programs to work together
++ Write programs to handle text streams, because that is a universal interface
+
+This philosophy makes it possible to perform a wide range of complex data analysis tasks by combining a relatively small number of basic commands in different ways. Once you have mastered these basic commands, you'll find that the bash shell provides an extremely powerful and useful way to manage bioinformatics analyses.

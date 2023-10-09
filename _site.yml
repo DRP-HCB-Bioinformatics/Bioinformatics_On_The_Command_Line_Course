@@ -1,0 +1,25 @@
+name: "WCB Introduction to Bioinformatics on the Command Line"
+navbar:
+  title: "Home"
+  left:
+    - text: "Introduction"
+      href: 01-introduction.html
+    - text: "Getting Started"
+      href: 01-start.html
+    - text: "Working with the file system"
+      href: 02-filesystem.html
+    - text: "Working with files"
+      href: 03-files.html
+    - text: "Working with processes"
+      href: 04-processes.html
+    - text: "Bioinformatics data analysis"
+      href: 05-analysis.html
+    - text: "Scripts"
+      href: 06-scripts.html
+output_dir: "."
+output:
+  html_document:
+    theme: yeti
+    highlight: textmate
+#    include:
+#      after_body: _footer.html
