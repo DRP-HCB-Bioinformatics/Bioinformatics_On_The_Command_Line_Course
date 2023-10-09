@@ -37,5 +37,4 @@ vignettes/*.pdf
 README.html
 #*~
 renv/
-site_libs/
 
