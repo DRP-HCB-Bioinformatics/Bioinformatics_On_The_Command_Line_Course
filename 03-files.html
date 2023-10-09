@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Working with files</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-filesystem.html">Working with the file system</a>
+</li>
+<li>
+  <a href="03-files.html">Working with files</a>
+</li>
+<li>
+  <a href="04-processes.html">Working with processes</a>
+</li>
+<li>
+  <a href="05-analysis.html">Bioinformatics data analysis</a>
+</li>
+<li>
+  <a href="06-scripts.html">Scripts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Working with files</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p>In this section you will learn how to explore and manipulate files in
+bash using simple commands, and compound commands using pipes.</p>
+<p><br></p>
+<div id="exploring-files" class="section level3">
+<h3>Exploring files</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Regular files in Linux can be classified as text files, which
+contain human readable text, and binary files, that contain data that is
+not human readable</li>
+<li>The <code>cat</code> command can be used to show the contents of a
+file
+<ul>
+<li>The <code>less</code> command allows you to page through a large
+file as if it were a <code>man</code> page</li>
+</ul></li>
+<li>The <code>head</code> and <code>tail</code> commands can be used to
+show the first or last few lines of a file
+<ul>
+<li>These can be useful for large text files</li>
+</ul></li>
+<li>The <code>wc -l</code> command counts the number of lines in a
+file</li>
+<li>The <code>grep</code> command allows you to filter a text file</li>
+<li>Text files can be <em>compressed</em> using the <code>gzip</code>
+command, which converts them to a binary format that takes up less space
+<ul>
+<li>Many of the above commands for working with text files have
+equivalents for gzipped files</li>
+<li>These include <code>zcat</code>, <code>zless</code>, and
+<code>zgrep</code></li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>The following example demonstrates how we can explore text files:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+1 directory, 5 files
+[USERNAME]@bifx-core2:~/course$ cat bioinformatics_on_the_command_line_files/README
+This archive contains reference files for the &#39;Introduction to Bioinformatics on the Command Line&#39; course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+
+- raw_yeast_rnaseq_data.fastq: This is a file containing 10,000 raw reads taken from a yeast RNA-Seq experiment
+- yeast_genome.fasta: This file contains the reference genome sequence for yeast (EF4) in fasta format
+- yeast_genes.bed: This file contains the genomic co-ordinates of yeast genes in bed format
+[USERNAME]@bifx-core2:~/course$ less bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+...
+&lt;q&gt;
+[USERNAME]@bifx-core2:~/course$ head -5 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+&gt;I
+CCACACCACACCCACACACCCACACACCACACCACACACCACACCACACCCACACACACA
+CATCCTAACACTACCCTAACACAGCCCTAATCTAACCCTGGCCAACCTGTCTCTCAACTT
+ACCCTCCATTACCCTGCCTCCACTCGTTACCCTGTCCCATTCAACCATACCACTCCGAAC
+CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
+[USERNAME]@bifx-core2:~/course$ tail -5 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+GTGTTTGTTGCACGGCAGTAGCGAGAGACAAGTGGGAAAGAGTAGGATAAAAAGACAATC
+TATAAAAAGTAAACATAAAATAAAGGTAGTAAGTAGCTTTTGGTTGAACATCCGGGTAAG
+AGACAACAGGGCTTGGAGGAGACGTACATGAGGGCTATTTAGGGCTATTTAGGGCTATGT
+AGAAGTGTTGTAGGGCTAAAGAACAGGGTTTCATTTTCATTTTTTTTTTTTAATTTCGGT
+CAGAAA
+[USERNAME]@bifx-core2:~/course$ wc -l bioinformatics_on_the_command_line_files/yeast_genes.bed
+7126 bioinformatics_on_the_command_line_files/yeast_genes.bed
+[USERNAME]@bifx-core2:~/course$ grep format bioinformatics_on_the_command_line_files/README
+This archive contains reference files for the &#39;Introduction to Bioinformatics on the Command Line&#39; course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+- yeast_genome.fasta: This file contains the reference genome sequence for yeast (EF4) in fasta format
+- yeast_genes.bed: This file contains the genomic co-ordinates of yeast genes in bed format
+[USERNAME]@bifx-core2:~/course$ grep -v format bioinformatics_on_the_command_line_files/README
+
+- raw_yeast_rnaseq_data.fastq: This is a file containing 10,000 raw reads taken from a yeast RNA-Seq experiment
+[USERNAME]@bifx-core2:~/course$ grep -c -E &#39;^&gt;&#39; bioinformatics_on_the_command_line_files/yeast_genome.fasta
+17
+[USERNAME]@bifx-core2:~/course$ gzip -k bioinformatics_on_the_command_line_files/yeast_genome.fasta
+[USERNAME]@bifx-core2:~/course$ ls -lh bioinformatics_on_the_command_line_files/yeast_genome.fasta*
+-rw-rw-r-- 1 [USERNAME] [USERNAME]  12M Nov 12 12:38 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+-rw-rw-r-- 1 [USERNAME] [USERNAME] 3.7M Nov 12 12:38 bioinformatics_on_the_command_line_files/yeast_genome.fasta.gz
+[USERNAME]@bifx-core2:~/course$ zgrep -c -E &#39;^&gt;&#39; bioinformatics_on_the_command_line_files/yeast_genome.fasta.gz
+17
+[USERNAME]@bifx-core2:~/course$</code></pre>
+<p><em>Note:</em> The <code>-E</code> flag in <code>grep</code> allows
+you to use a <em>regular expression</em> to specify a pattern that
+<code>grep</code> will look for rather than a fixed string.
+Conceptually, regular expressions are similar to glob patterns, although
+their syntax is different. Some characters have a special meaning in
+regular expressions. For example:</p>
+<ul>
+<li><code>^</code> represents the start of a string</li>
+<li><code>$</code> represents the end of a string</li>
+<li><code>.*</code> represents a sequence of zero or more
+characters</li>
+<li><code>.+</code> represents a sequence of one or more characters</li>
+</ul>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How would you check that every line of the ‘yeast_genes.bed’ file starts
+with the string ‘chr’ without looking through the whole file?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Run
+<code>grep -v -c -E '^chr' bioinformatics_on_the_command_line_files/yeast_genes.bed</code>
+to count the number of lines that don’t start with ‘chr’. We can see
+that this is zero, so every line must start with ‘chr’.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+<div id="shell-redirection" class="section level3">
+<h3>Shell redirection</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>The shell can manage where programs receive inputs from and where
+they send outputs to</li>
+<li>It provides three I/O channels for programs to use. These are:
+<ul>
+<li><strong>Standard input</strong>, or <strong>STDIN</strong>, which
+provides input to the program</li>
+<li><strong>Standard output</strong>, or <strong>STDOUT</strong>, which
+receives output from the program</li>
+<li><strong>Standard error</strong>, or <strong>STDERR</strong>, which
+receives error messages from the program</li>
+</ul></li>
+<li>Program authors don’t have to use these I/O channels, but most
+command line tools designed for Linux, such as the GNU coreutils, do use
+them</li>
+<li>By default, <strong>STDIN</strong> comes from the keyboard, and
+<strong>STDOUT</strong> and <strong>STDERR</strong> go to the terminal,
+but each of these channels can be redirected
+<ul>
+<li><code>&gt;</code> redirects <strong>STDOUT</strong> to an output
+file, overwriting its contents</li>
+<li><code>&gt;&gt;</code> redirects <strong>STDOUT</strong> to an output
+file, appending to its contents</li>
+<li><code>2&gt;</code> redirects <strong>STDERR</strong> to an output
+file, overwriting its contents</li>
+<li><code>2&gt;&gt;</code> redirects <strong>STDERR</strong> to an
+output file, appending to its contents</li>
+<li><code>&lt;</code> reads each line from an input file and feeds it to
+<strong>STDIN</strong></li>
+<li><code>2&gt;&amp;1</code> redirects <strong>STDERR</strong> to
+<strong>STDOUT</strong></li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>The following example demonstrates how shell redirection works:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ echo zero &gt; output.txt
+[USERNAME]@bifx-core2:~/course$ cat &lt; output.txt
+zero
+[USERNAME]@bifx-core2:~/course$ echo one &gt; output.txt
+[USERNAME]@bifx-core2:~/course$ cat &lt; output.txt
+one
+[USERNAME]@bifx-core2:~/course$ echo two &gt;&gt; output.txt
+[USERNAME]@bifx-core2:~/course$ cat &lt; output.txt
+one
+two
+[USERNAME]@bifx-core2:~/course$ cat bioinformatics_on_the_command_line_files/README &gt; cat_readme.out 2&gt; cat_readme.err
+[USERNAME]@bifx-core2:~/course$ head -2 cat_readme.*
+==&gt; cat_readme.err &lt;==
+
+==&gt; cat_readme.out &lt;==
+This archive contains reference files for the &#39;Introduction to Bioinformatics on the Command Line&#39; course. In the course you will learn how to build a simple pipeline to analyse some yeast RNA-Seq data using these files. The following files are included:
+
+[USERNAME]@bifx-core2:~/course$ zcat bioinformatics_on_the_command_line_files/README &gt; zcat_readme.out 2&gt; zcat_readme.err
+[USERNAME]@bifx-core2:~/course$ head -2 zcat_readme.*
+==&gt; zcat_readme.err &lt;==
+
+gzip: bioinformatics_on_the_command_line_files/README: not in gzip format
+
+==&gt; zcat_readme.out &lt;==
+[USERNAME]@bifx-core2:~/course$ zcat bioinformatics_on_the_command_line_files/README &gt; zcat_readme.all 2&gt;&amp;1
+[USERNAME]@bifx-core2:~/course$ cat zcat_readme.all
+
+gzip: bioinformatics_on_the_command_line_files/README: not in gzip format
+[USERNAME]@bifx-core2:~/course$ rm -i *cat_readme.* output.txt
+rm: remove regular empty file &#39;cat_readme.err&#39;? y
+rm: remove regular file &#39;cat_readme.out&#39;? y
+rm: remove regular file &#39;zcat_readme.all&#39;? y
+rm: remove regular file &#39;zcat_readme.err&#39;? y
+rm: remove regular empty file &#39;zcat_readme.out&#39;? y
+rm: remove regular file &#39;output.txt&#39;? y
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+<code>cat output.txt</code> and <code>cat &lt; output.txt</code> do the
+same thing, but <code>echo output.txt</code> and
+<code>echo &lt; output.txt</code> don’t. Why?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>The <code>cat</code> command opens the file given as an argument and
+processes the lines one by one, and it treats lines received from
+<strong>STDIN</strong> in the same way. Many programs work this way, but
+some, like <code>echo</code> don’t. <code>echo</code> simply ignores
+what comes in from <strong>STDIN</strong>.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+<div id="creating-compound-commands-using-pipes" class="section level3">
+<h3>Creating compound commands using pipes</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Because the shell provides standard input and output channels, it is
+possible to chain together simple commands to perform complex tasks</li>
+<li>This can be done using a ‘pipe’, represented by the pipe character
+<code>|</code></li>
+</ul>
+</div>
+<p><br></p>
+<p>So far we have discussed simple commands, which consist of a single
+command name followed by some options and arguments. However, a lot of
+the flexibility of the tools accessible via bash comes from the ability
+to combine them to form compound commands, using pipes. This allows the
+user to perform complex tasks by joining together simple commands.</p>
+<p><em>Motivating example:</em> How do you count how many of the first
+40 lines in a FASTQ file contain the sequence ACTG?</p>
+<p>Here’s how you could do it using simple commands:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq &gt; first_40_lines.tmp
+[USERNAME]@bifx-core2:~/course$ grep -c ACTG first_40_lines.tmp
+5
+[USERNAME]@bifx-core2:~/course$ rm -i first_40_lines.tmp
+rm: remove regular file &#39;first_40_lines.tmp&#39;? y
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p>Here’s how you can do it in a single command using a pipe:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq | grep -c ACTG
+5
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p>Pipes are particularly useful for working with large files, as they
+remove the need to create large intermediate files, which may take up
+space. They can also save time, as commands can sometimes start working
+on the data produced by commands preceding them in the pipeline before
+they have finished running, and in some cases preceding commands can be
+terminated early if further outputs are no longer needed.</p>
+<p>Because some programs only operate on files and do not accept input
+from <strong>STDIN</strong>, it is sometimes useful to present the
+output of one program to another program as if it were a file. This can
+be done using the <code>&lt;()</code> notation. For example, the command
+shown above could also be written using this notation as follows:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ grep -c ACTG &lt;(head -40 bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq)
+5
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge
+</h2>
+<p>We can find how long it takes to find the first line in
+‘/homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa’
+that countains the character ‘A’ by writing all matches to a temporary
+file and then finding the first line using <code>head</code> as
+follows:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ time grep A /homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa &gt; grepA.tmp
+
+real    0m36.182s
+user    0m7.831s
+sys     0m6.377s
+[USERNAME]@bifx-core2:~/course$ time head -1 grepA.tmp
+gcttcagaataatcatattattctcaaattttgtatcaatataaaaaaaA
+
+real    0m0.008s
+user    0m0.001s
+sys     0m0.003s
+[USERNAME]@bifx-core2:~/course$ rm -ri grepA.tmp
+rm: remove regular file &#39;grepA.tmp&#39;? y
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p>We can see that the operation takes just over 36 seconds. Using the
+<code>time</code> command, find the length of time it takes to perform
+the same task using a pipe. Is there much of a difference? Why?</p>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>To find out how long it takes to find the line with a pipe you can do
+the following:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ time grep A /homes/genomes/mouse/UCSC/mm10/Sequence/WholeGenomeFasta/genome.fa | head -1
+gcttcagaataatcatattattctcaaattttgtatcaatataaaaaaaA
+
+real    0m0.011s
+user    0m0.002s
+sys 0m0.012s</code></pre>
+<p>As we can see the operation completes in about 0.01 seconds, so using
+a pipe is considerably faster. This is because the pipeline stops when
+it has found the first match, so the <code>grep</code> command doesn’t
+have to go through the whole file.</p>
+<p><em>Note:</em> it is actually possible to find the first match
+quickly using a single grep command and no pipe, by using the
+<code>-m</code> option in grep.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

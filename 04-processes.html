@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Working with processes</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-filesystem.html">Working with the file system</a>
+</li>
+<li>
+  <a href="03-files.html">Working with files</a>
+</li>
+<li>
+  <a href="04-processes.html">Working with processes</a>
+</li>
+<li>
+  <a href="05-analysis.html">Bioinformatics data analysis</a>
+</li>
+<li>
+  <a href="06-scripts.html">Scripts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Working with processes</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p>In this section you will learn how to work with processes and jobs in
+bash.</p>
+<p><br></p>
+<div id="exploring-processes" class="section level2">
+<h2>Exploring processes</h2>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key points
+</h2>
+<ul>
+<li>A running program is known as a <strong>process</strong>. On a
+modern computer many different processes can run at once</li>
+<li>Processes are managed by the <strong>operating system</strong>
+(Linux in our case)
+<ul>
+<li>The operating system controls how the computer’s resources, such as
+CPU and disk access, are allocated to the different processes</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>There are a few different ways to explore the processes running on
+your computer:</p>
+<ul>
+<li><code>ps</code> shows the processes you are currently running</li>
+<li><code>top</code> shows all active processes</li>
+<li><code>htop</code> gives a user friendly representation of the
+processes currently running along with CPU and memory usage on the
+server</li>
+<li><code>pgrep</code> finds the process IDs of all running instances of
+a particular program</li>
+</ul>
+<p>We can learn a lot about processes by looking at the output of these
+commands. For example, if we run the command <code>ps -fly</code> we get
+something like this:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ ps -fly
+S UID         PID   PPID   C  PRI  NI   RSS   SZ    WCHAN  STIME TTY          TIME CMD
+S [USERNAME]  35269 35244  0  80   0    39296 13648 wait   Nov10 pts/5    00:00:04 -bash
+R [USERNAME]  44935 35269  0  80   0    3328  8822  -      10:11 pts/5    00:00:00 ps -fly
+...</code></pre>
+<p>By looking at the output columns, we can see the following:</p>
+<ul>
+<li>Each process has an <em>owner</em>, whose username is shown in the
+<em>UID</em> column</li>
+<li>Each process has a unique <em>ID</em>, shown in the <em>PID</em>
+column</li>
+<li>Each process also has a single <em>parent process</em>, whose ID is
+shown in the <em>PPID</em> column
+<ul>
+<li>The parent of a process is the process that started it. In our case,
+the <code>ps -fly</code> process was started by the <code>bash</code>
+process</li>
+<li>You can see this by observing that the <em>PPID</em> of the
+<code>ps -fly</code> process is the same as the <em>PID</em> of the
+<code>bash</code> process</li>
+</ul></li>
+</ul>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Use <code>htop</code> to find the following:
+<ul>
+<li>
+How many cores does bifx-core2 have?
+</li>
+<li>
+How much memory does it have?
+</li>
+<li>
+What is the parent process of the <code>htop</code> process?
+</li>
+</ul>
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Run <code>htop -u [USERNAME]</code> to start <code>htop</code> and
+display only your own processes. At the top of the <code>htop</code>
+screen there is a bar chart style representation of each of the cores on
+the server, showing how busy each core is. bifx-core2 has 64 cores.
+There is also a bar entitled <em>Mem</em>, with the total memory shown
+to its right. bifx-core2 has 504G. To find the parent process of
+<code>htop</code> press <kbd>F5</kbd> to see a tree view. Then press
+<kbd>F3</kbd> and search for <code>htop</code>. The parent process is
+<code>bash</code>, visible above the <code>htop</code> process.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+<div id="job-control" class="section level2">
+<h2>Job control</h2>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key points
+</h2>
+<ul>
+<li>A ‘job’ is a process that is managed by the bash shell, and is a
+child of the bash process
+<ul>
+<li>In general, whenever you run a command in bash, it starts a job</li>
+</ul></li>
+<li>The shell keeps track of all of the jobs that it’s currently
+managing</li>
+<li>Running a command starts it as a foreground job
+<ul>
+<li>When a job is run in the foreground you are not shown another
+command prompt until the job completes.</li>
+</ul></li>
+<li>Running a command followed by <em>&amp;</em> starts it as a
+background job
+<ul>
+<li>When a job is run in the background you are shown another command
+prompt immediately.</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<div id="controlling-processes-and-jobs" class="section level3">
+<h3>Controlling processes and jobs</h3>
+<hr />
+<p>In UNIX based systems, jobs and processes can be paused or stopped
+completely by sending them ‘signals’. There are many signals that you
+can send (type <code>kill -l</code> to list them all). Arguably the most
+important are the following:</p>
+<ul>
+<li>SIGINT, SIGHUP, and SIGTERM, which request that the process should
+terminate gracefully
+<ul>
+<li>Not all programs respond to these signals. For instance,
+<code>vim</code> ignores the SIGINT signal</li>
+</ul></li>
+<li>SIGKILL, which terminates the process immediately
+<ul>
+<li>This should only be used as a last resort, as processes that are
+sent this signal will not be able close gracefully</li>
+</ul></li>
+<li>SIGTSTP, which suspends the process, and SIGCONT, which restarts a
+suspended process</li>
+</ul>
+<p><br></p>
+<div id="sending-signals-to-jobs-or-processes" class="section level4">
+<h4>Sending signals to jobs or processes</h4>
+<p>There are many ways to send signals to jobs. Here are some
+particularly useful ones:</p>
+<ul>
+<li>The <code>kill</code> command sends a specified signal to an
+individual process or job by ID
+<ul>
+<li><code>jobs</code> shows you the names and IDs of all of the jobs
+that you are currently running in your shell</li>
+<li>You can also use <code>killall</code> to send a signal to all
+running instances of a given program, but this is generally a bad idea.
+It is better to use <code>htop</code> or a combination of
+<code>pgrep</code> and <code>kill</code> to ensure you only send a
+signal to the process that you want to</li>
+</ul></li>
+<li>Pressing <kbd>f9</kbd> in <code>htop</code> also allows you to send
+the signal of your choice to the selected process</li>
+</ul>
+<p>There are also some useful keyboard shortcuts to send signals to
+jobs</p>
+<ul>
+<li><kbd>Ctrl+c</kbd> sends the SIGINT signal to the current foreground
+job</li>
+<li><kbd>Ctrl+z</kbd> sends the SIGTSTP signal to the current foreground
+job</li>
+</ul>
+<p><br></p>
+</div>
+<div id="restarting-jobs" class="section level4">
+<h4>Restarting jobs</h4>
+<p>Once a job has been stopped, it can be restarted in a number of
+ways:</p>
+<ul>
+<li><code>fg [job ID]</code> restarts a job in the foreground</li>
+<li><code>bg [job ID]</code> restarts a job in the background</li>
+<li>Send the SIGCONT signal to the job using
+<code>kill -CONT [job or process ID]</code> or <code>htop</code></li>
+</ul>
+<p><br></p>
+</div>
+<div id="disowing-jobs" class="section level4">
+<h4>Disowing jobs</h4>
+<p>By default, jobs you start in your shell are ‘owned’ by your current
+shell session. As a result, on some servers the job might be terminated
+when you exit the shell (depending on how bash is configured). You can
+ensure that this does not happen by ‘disowning’ the job.</p>
+<ul>
+<li><code>disown [job ID]</code> disowns a currently running job
+<ul>
+<li>once a job has been disowned by the shell, it will disappear from
+the shell’s job table. The process will become a child of the top level
+process</li>
+</ul></li>
+<li><code>nohup</code> can be used to start a job that will definitely
+not be sent a SIGHUP signal when the shell is closed
+<ul>
+<li>Using <code>nohup</code> also diverts any output that would have
+gone to the shell to a file called <em>nohup.out</em></li>
+</ul></li>
+</ul>
+<p>The following example shows how to move a foreground job to the
+background and disown it:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ sleep 10000
+&lt;Ctrl+z&gt;
+^Z
+[1]+  Stopped                 sleep 10000
+[USERNAME]@bifx-core2:~/course$ bg %1
+[1]+ sleep 10000 &amp;
+[USERNAME]@bifx-core2:~/course$ jobs
+[1]+  Running                 sleep 10000 &amp;
+[USERNAME]@bifx-core2:~/course$ disown %1
+[USERNAME]@bifx-core2:~/course$ jobs
+[USERNAME]@bifx-core2:~/course$ ps
+  PID TTY          TIME CMD
+29621 pts/1    00:00:00 sleep
+37480 pts/1    00:00:00 bash
+40951 pts/1    00:00:00 ps
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p>The example shows that when the <code>sleep 10000</code> job is
+disowned it is removed from the <code>jobs</code> list, but the process
+keeps running.</p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you terminate a foreground job without using
+<kbd>Ctrl+c</kbd>?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>One way would be to pause the job with <kbd>Ctrl+z</kbd>, and then
+use <code>kill -INT [job ID]</code> to send a SIGINT signal to the
+job</p>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you restart a stopped job that has been disowned?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>You could use <code>htop</code> or <code>ps</code> to find the
+process IDs of the stopped processes, and then use
+<code>kill -CONT [process ID]</code> to send a SIGCONT signal to those
+processes.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Getting Started</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-filesystem.html">Working with the file system</a>
+</li>
+<li>
+  <a href="03-files.html">Working with files</a>
+</li>
+<li>
+  <a href="04-processes.html">Working with processes</a>
+</li>
+<li>
+  <a href="05-analysis.html">Bioinformatics data analysis</a>
+</li>
+<li>
+  <a href="06-scripts.html">Scripts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Getting Started</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p>In this section you will learn how to log into the WCB’s bifx
+servers, and run some simple commands. You will also learn how to find
+out about commands, and how to use bash efficiently.</p>
+<p><br></p>
+<div id="starting-a-terminal-and-logging-in-to-the-remote-server"
+class="section level3">
+<h3>Starting a Terminal and logging in to the remote server</h3>
+<hr />
+<p>The process of starting a terminal depends on the operating system
+that you are using:</p>
+<ul>
+<li>On Mac OS X or Ubuntu Linux, simply open the ‘Terminal’
+application</li>
+<li>On Windows, you can install <a
+href="https://mobaxterm.mobatek.net/">MobaXTerm</a></li>
+</ul>
+<p>In order to log in to the bifx-core2 server, you must first connect
+to the <a
+href="https://www.ed.ac.uk/information-services/computing/desktop-personal/vpn/vpn-service-using">Edinburgh
+University VPN</a>.</p>
+<p>Once logged in to the VPN, you can log in to the server by typing the
+following command in the Terminal, substituting [USERNAME] for your
+account username:</p>
+<pre class="r"><code>$ ssh [USERNAME]@bifx-core2.bio.ed.ac.uk</code></pre>
+<p>If you are using MobaXTerm, an alternative way of logging in to the
+server is shown in the <a
+href="https://mobaxterm.mobatek.net/demo.html">MobaXTerm demo</a>.</p>
+<p>Once you have typed in your password, you should see some welcome
+text and a prompt that looks something like this:</p>
+<pre class="r"><code>[USERNAME]@bifx-core2:~$</code></pre>
+<p>This prompt shows you that you are logged in to the
+<em>bifx-core2</em> server, and that you are in your home directory
+(which is referred to using the <em>~</em> character on Linux
+systems).</p>
+<p><em>Note:</em> If you find that your connection to the server keeps
+dropping out, you can use a tool such as <a
+href="https://www.ocf.berkeley.edu/~ckuehl/tmux/">tmux</a> or <a
+href="https://www.gnu.org/software/screen/">screen</a> to create a
+persistent session.</p>
+<p><br></p>
+</div>
+<div id="running-basic-commands-in-bash" class="section level3">
+<h3>Running basic commands in bash</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Commands in bash can be categorised as either:
+<ul>
+<li>built in commands (or <em>builtins</em>), which are part of the bash
+shell, or</li>
+<li>installed programs, which could be either the basic GNU core
+utilities (or <em>coreutils</em>), included in most Linux distributions,
+or other programs, such as specialised bioinformatics tools</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>In order to run a command in bash you type the command and then press
+the return key to execute it. For example, try typing <code>date</code>
+at the prompt and pressing return. You should get something like
+this:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ date
+Mon 16 Nov 09:21:43 GMT 2020
+[USERNAME]@bifx-core2:~$ </code></pre>
+<p>As you can see, the output of the <code>date</code> command is
+printed on the command line, and then another prompt is shown.</p>
+<p>As well as the command name, a command can include ‘options’ and
+‘arguments’. For example, try typing <code>date -d '25 Dec' +%j</code>
+at the command line:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ date -d &#39;25 Dec&#39; +%j
+360
+[USERNAME]@bifx-core2:~$ </code></pre>
+<p>In this example, the command includes the following elements:</p>
+<ul>
+<li>the command name <code>date</code>, which always comes first</li>
+<li>one option <code>-d '25 Dec'</code>, which has a name
+<code>-d</code> (option names always start with at least one ‘-’), and a
+value <code>'25 Dec'</code></li>
+<li>one argument <code>+%j</code></li>
+</ul>
+<p><br></p>
+<div id="options-and-arguments" class="section level4">
+<h4>Options and arguments</h4>
+<p>Options always have a name, but do not always need to have an
+associated value. Options that don’t have a value are called flags, and
+are often used as switches for different kinds of functionality. Unlike
+options, arguments don’t have names. Instead they are identified by
+their position.</p>
+<p>In general, the values of options and arguments are text strings,
+which are passed directly to the command. If a value contains spaces,
+you can surround it with quote marks, as in the example above, so that
+it is recognised as a single value. You can also use the output of one
+command as an argument to another by enclosing it in backticks ```, as
+in the following example:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ echo date
+date
+[USERNAME]@bifx-core2:~$ echo `date`
+Sat 14 Nov 11:25:11 GMT 2020
+[USERNAME]@bifx-core2:~$ </code></pre>
+<p><em>Note:</em> The above example uses the <code>echo</code> command,
+which outputs the values of its arguments.</p>
+<p><br></p>
+</div>
+</div>
+<div id="finding-out-about-bash-commands" class="section level3">
+<h3>Finding out about bash commands</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>The bash shell provides a number of different ways to access
+information about commands, in particular:
+<ul>
+<li>The <code>man</code> command</li>
+<li>The <code>info</code> command</li>
+<li><code>--help</code> and <code>-h</code> flags</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>While the use of options and arguments makes commands more powerful
+and flexible, they can be difficult to remember, and can vary between
+different versions of the command. For this reason, it is useful to be
+able to find information about commands easily.</p>
+<p><br></p>
+<div id="the-man-command" class="section level4">
+<h4>The <code>man</code> command</h4>
+<p>This displays a short manual page for a single command. To see the
+manual page for the <em>date</em> command simply type
+<code>man date</code>.</p>
+<ul>
+<li>You can scroll through the man page using <kbd>space</kbd>, and type
+<kbd>q</kbd> to quit
+<ul>
+<li>You can learn more about different commands by typing
+<kbd>h</kbd></li>
+</ul></li>
+<li>To learn about bash builtins, type <code>man builtins</code></li>
+</ul>
+<p><br></p>
+</div>
+<div id="the-info-command" class="section level4">
+<h4>The <code>info</code> command</h4>
+<p>This displays a more comprehensive hyperlinked manual, which provides
+detailed information about the GNU coreutils. Simply type
+<code>info</code> to see the info documentation, and type <kbd>H</kbd>
+in info to find out how to navigate the documentation. Press
+<kbd>q</kbd> to quit.</p>
+<p><br></p>
+</div>
+<div id="help-and--h-flags" class="section level4">
+<h4><code>--help</code> and <code>-h</code> flags</h4>
+<p>Some programs may not have any documentation that is accessible using
+the <code>man</code> or <code>info</code> commands. In this case, they
+may follow the convention of including <code>--help</code> or
+<code>-h</code> flags, which will show some usage information. As an
+example, we can try to find help information about
+<code>bedtools</code>, which is a well known bioinformatics tool that we
+will look at later in the course:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ man bedtools
+No manual entry for bedtools
+See &#39;man 7 undocumented&#39; for help when manual pages are not available.
+[USERNAME]@bifx-core2:~$ info bedtools
+info: No menu item &#39;bedtools&#39; in node &#39;(dir)Top&#39;
+[USERNAME]@bifx-core2:~$ bedtools --help
+bedtools is a powerful toolset for genome arithmetic.
+
+Version:   v2.27.0
+...</code></pre>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+We saw the command “date -d ‘25 Dec’ +%j” in the previous section. Can
+you use the <code>man</code> command to explain what it does?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Run <code>man date</code>, and look for the <code>-d</code> flag. The
+documentation explains that <code>-d</code> tells date to display the
+time described by the value of the option, rather than the current time.
+Now look up <code>%j</code> in the documentation. The relevant line says
+‘%j day of year (001..366)’. So the command tells you which day of the
+year it will be on the 25th of December.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+</div>
+<div id="using-bash-efficiently" class="section level3">
+<h3>Using bash efficiently</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Working with long commands in bash can be laborious, but luckily
+there are a few tricks that you can use to make things easier. These
+are:
+<ul>
+<li>Keyboard shortcuts</li>
+<li>Tab completion</li>
+<li>Using the bash history</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<div id="keyboard-shortcuts" class="section level4">
+<h4>Keyboard shortcuts</h4>
+<p>By default, bash allows you to use many keyboard shortcuts from the
+<a href="https://www.gnu.org/software/emacs/">GNU Emacs</a> editor to
+work with your commands. These include:</p>
+<ul>
+<li><kbd>Ctrl+a</kbd> to move to the beginning of the line</li>
+<li><kbd>Ctrl+e</kbd> to move to the end of the line</li>
+<li><kbd>Ctrl/Meta+f</kbd> to move forward one character
+(<kbd>Ctrl+f</kbd>) or one word (<kbd>Meta+f</kbd>)
+<ul>
+<li>The <em>Meta</em> key is generally the <kbd>Alt</kbd> key, or the
+<em>option</em> key on a Mac</li>
+<li>If the <em>option</em> key doesn’t work as <em>Meta</em> on a Mac
+and you’re using the Terminal application, ensure that the <em>Use
+Option as Meta key</em> checkbox is ticked for your selected profile
+(this can be found under Preferences &gt; Profiles &gt; Keyboard)</li>
+</ul></li>
+<li><kbd>Ctrl/Meta+b</kbd> to move back one character
+(<kbd>Ctrl+b</kbd>) or one word (<kbd>Meta+b</kbd>)</li>
+<li><kbd>Ctrl+k</kbd> to cut the text from the cursor to the end of the
+line</li>
+<li><kbd>Ctrl+y</kbd> to paste text at the cursor</li>
+</ul>
+<p>You can also use <kbd>Ctrl+c</kbd> to terminate the command that is
+currently running and take you back to the command prompt.</p>
+<p><br></p>
+</div>
+<div id="tab-completion" class="section level4">
+<h4>Tab completion</h4>
+<p>Tab completion allows you to type part of a command name followed by
+the <kbd>Tab</kbd> key, which prompts bash to guess the rest of the
+command name based on the commands that are available on the system.</p>
+<p>For instance, if you want to run the <em>bedtools</em> command on the
+server, you can type <em>bedt</em> followed by <kbd>Tab</kbd>, and the
+rest of the command name will be filled in for you.</p>
+<p>Typing <kbd>Tab</kbd> once to complete a command name only works if
+there is only one possible way to complete the name. If there are
+multiple options and you would like to see them, you can type
+<kbd>Tab</kbd> twice, and the possible completions will be
+displayed.</p>
+<p><br></p>
+</div>
+<div id="using-the-bash-history" class="section level4">
+<h4>Using the bash history</h4>
+<p>A particularly useful feature of command line shells is the ability
+to look back at previous commands that you have run. In bash you can
+access these commands using the <em>history</em> command. Typing
+<em>history</em> will show you a numbered list of commands you’ve run
+recently. You can also specify the number of previous commands you’d
+like to see by including it as an argument.</p>
+<p>There are a few useful tricks that make it easy to find and run
+commands that you have run before:</p>
+<ul>
+<li>Scrolling through the history with the up and down arrows (or
+<kbd>Ctrl+p</kbd> and <kbd>Ctrl+n</kbd>)</li>
+<li>Searching the history with <kbd>Ctrl+r</kbd> (reverse-i-search)</li>
+<li>Re-running a previously run command with ! followed by the number of
+the command</li>
+</ul>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+What are the possible completions of ‘bed’ on the server?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Add the command prompt type <code>bed</code> then press
+<kbd>Tab</kbd> twice. You should see the following:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ bed&lt;Tab&gt;&lt;Tab&gt;
+bed12ToBed6                   bedExons.pl                   bedRestrictToPositions
+bed2gff3.pl                   bed_extend_to.py              bedSort
+bed2pos.pl                    bedextract                    bedSpliceSite.pl
+bed2region                    bedGeneParts                  bedSplitOnChrom
+bed2tag.pl                    bedGraphToBigWig              bed_subtract_basewise.py
+bed_bigwig_profile.py         bedInGraph                    bedToBam
+bed_build_windows.py          bedIntersect                  bedToBigBed
+bedClip                       bed_intersect_basewise.py     bedToExons
+bedCombiner.pl                bed_intersect.py              bedToFrames
+bedCommonRegions              bedItemOverlapCount           bedToGenePred
+bed_complement.py             bedLengthFilter.pl            bedToIgv
+bedCons                       bedmap                        bed_to_juncs
+bed_count_by_interval.py      bed_merge_overlapping.py      bedtools
+bed_count_overlapping.py      bedops                        bedToPsl
+bedCoverage                   bedops-starch                 bedToTxEdges
+bed_coverage_by_interval.py   bedOrBlocks                   bedUp
+bed_coverage.py               bedpeToBam                    bedWeedOverlapping
+bed_diff_basewise_summary.py  bed_rand_intersect.py
+bedDown                       bedRemoveOverlap
+[USERNAME]@bifx-core2:~$</code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Use the history to re-run the <code>date -d '25 Dec' +%j</code> command
+without re-typing it
+<details>
+<summary>
+</summary>
+<div class="solution">
+<p>There are three ways to do this: <br> One way would be to press
+<kbd>Ctrl+r</kbd>, then type <code>date</code>, then press
+<kbd>Ctrl+r</kbd> again repeatedly until you see the command, then press
+<kbd>Enter</kbd> to run it. <br> Alternatively, you could run the
+<code>history</code> command and look back through the history list to
+find the command. Then you could type <code>!</code> at the command
+prompt followed by the number of the command in the history. <br> A
+third way would be to either hit the up arrow or type <kbd>Ctrl+p</kbd>
+to scroll back through the history until you see the command, then press
+<kbd>Enter</kbd> to run it.</p>
+</div>
+</details>
+</div>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

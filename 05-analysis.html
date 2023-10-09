@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Bioinformatics analysis on the command line</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-filesystem.html">Working with the file system</a>
+</li>
+<li>
+  <a href="03-files.html">Working with files</a>
+</li>
+<li>
+  <a href="04-processes.html">Working with processes</a>
+</li>
+<li>
+  <a href="05-analysis.html">Bioinformatics data analysis</a>
+</li>
+<li>
+  <a href="06-scripts.html">Scripts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Bioinformatics analysis on the command
+line</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p>In this section you will learn how to work with common Next
+Generation Sequencing (NGS) data formats on the command line.</p>
+<p><br></p>
+<div id="bioinformatics-data-formats-and-tools" class="section level3">
+<h3>Bioinformatics data formats and tools</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Many standard formats for storing high throughput sequencing data
+take the form of structured text files, which are easy to manipulate
+using standard GNU utilities</li>
+<li>Many powerful specialist tools for bioinformatics analysis have been
+developed to use these formats</li>
+</ul>
+</div>
+<p><br></p>
+<p>Many of the most common types of file that you will have to work with
+as a bioinformatician take the form of structured text files, examples
+include:</p>
+<ul>
+<li>Standard formats for representing raw sequences
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/FASTA_format">FASTA</a></li>
+<li><a href="https://en.wikipedia.org/wiki/FASTQ_format">FASTQ</a></li>
+</ul></li>
+<li>Tabular formats for representating aligned reads and features
+<ul>
+<li><a
+href="https://en.wikipedia.org/wiki/BED_(file_format)">BED</a></li>
+<li><a href="http://samtools.github.io/hts-specs/SAMv1.pdf">SAM</a></li>
+<li><a
+href="http://genome.ucsc.edu/goldenPath/help/bedgraph.html">bedGraph</a></li>
+</ul></li>
+</ul>
+<p>Some other compressed formats, such as <a
+href="http://samtools.github.io/hts-specs/SAMv1.pdf">BAM</a>, which is a
+compressed version of the SAM format, can easily be converted to human
+readable text.</p>
+<p>Furthermore, numerous specialist bioinformatics tools have been
+specifically developed for working with these file formats. For
+example:</p>
+<ul>
+<li><a href="https://bedtools.readthedocs.io/">bedtools</a> and <a
+href="https://bedops.readthedocs.io/en/latest/">bedops</a>, which work
+with BED files</li>
+<li>Various aligners, such as <a
+href="https://github.com/alexdobin/STAR">STAR</a>, <a
+href="http://daehwankimlab.github.io/hisat2/">hisat2</a>, and others,
+which take raw sequences in FASTQ or FASTA format and align them to the
+genome</li>
+<li><a href="http://www.htslib.org/">samtools</a>, which works with SAM
+files and BAM files
+<ul>
+<li>BAM files can be viewed in SAM format using the
+<code>samtools view</code> command</li>
+</ul></li>
+</ul>
+<p><em>Note:</em> These tools are not included in most Linux
+distributions as standard and typically have to be installed
+separately.</p>
+<p><br></p>
+</div>
+<div id="working-with-ngs-data-using-gnu-tools" class="section level3">
+<h3>Working with NGS data using GNU tools</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>It is possible to perform a wide range of complex analysis tasks on
+NGS data files using standard GNU utilities</li>
+<li>In this section we illustrate the application of these tools to NGS
+data</li>
+</ul>
+</div>
+<p><br></p>
+<p>In previous sections, we extracted an archive named
+<code>bioinformatics_on_the_command_line_files.tar.gz</code> into the
+<code>~/course</code> directory, creating a directory called
+<code>~/course/bioinformatics_on_the_command_line_files</code>. This
+directory contains a file called <code>yeast_genes.bed</code>, which
+lists the genomic co-ordinates of 7,126 yeast genes in BED format, and
+another file called <code>yeast_genome.fasta</code>, which contains the
+yeast EF4 genome sequence in FASTA format:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ head -5 bioinformatics_on_the_command_line_files/yeast_genes.bed
+chrI    334 649 YAL069W .   +
+chrI    537 792 YAL068W-A   .   +
+chrI    1806    2169    YAL068C .   -
+chrI    2479    2707    YAL067W-A   .   +
+chrI    7234    9016    YAL067C .   -
+[USERNAME]@bifx-core2:~/course$ head -5 bioinformatics_on_the_command_line_files/yeast_genome.fasta
+&gt;I
+CCACACCACACCCACACACCCACACACCACACCACACACCACACCACACCCACACACACA
+CATCCTAACACTACCCTAACACAGCCCTAATCTAACCCTGGCCAACCTGTCTCTCAACTT
+ACCCTCCATTACCCTGCCTCCACTCGTTACCCTGTCCCATTCAACCATACCACTCCGAAC
+CACCATCCATCCCTCTACTTACTACCACTCACCCACCGTTACCCTCCAATTACCCATATC
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p><br></p>
+<div id="checking-chromosome-names-in-bed-and-fasta-files"
+class="section level4">
+<h4>Checking chromosome names in BED and FASTA files</h4>
+<p>Looking at the above outputs, we can see that the naming convention
+for the chromosomes in the BED file (shown in the first column) appears
+to be different to the naming convention for the chromosomes in the
+FASTA file (shown in the first line after the <code>&gt;</code>
+character). In order to confirm this we would like to produced a sorted
+list of chromosome names in each file and compare them. We can do this
+as follows:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ cd bioinformatics_on_the_command_line_files
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ cut -f1 yeast_genes.bed | sort -u &gt; yeast_genes_bed_chromosomes.list 
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ grep -E &#39;^&gt;&#39; yeast_genome.fasta | sort -u | cut -c2- &gt; yeast_genome_fasta_chromosomes.list
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ wc -l *_chromosomes.list
+ 17 yeast_genes_bed_chromosomes.list
+ 17 yeast_genome_fasta_chromosomes.list
+ 34 total
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ diff yeast_genes_bed_chromosomes.list yeast_genome_fasta_chromosomes.list 
+1,17c1,17
+&lt; chrI
+&lt; chrII
+&lt; chrIII
+&lt; chrIV
+&lt; chrIX
+&lt; chrMT
+&lt; chrV
+&lt; chrVI
+&lt; chrVII
+&lt; chrVIII
+&lt; chrX
+&lt; chrXI
+&lt; chrXII
+&lt; chrXIII
+&lt; chrXIV
+&lt; chrXV
+&lt; chrXVI
+---
+&gt; I
+&gt; II
+&gt; III
+&gt; IV
+&gt; IX
+&gt; MT
+&gt; V
+&gt; VI
+&gt; VII
+&gt; VIII
+&gt; X
+&gt; XI
+&gt; XII
+&gt; XIII
+&gt; XIV
+&gt; XV
+&gt; XVI
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ </code></pre>
+<p>The above example demonstrates the following new commands:</p>
+<ul>
+<li><code>cut</code>, which we used to select specified fields with the
+<code>-f</code> option, and specified characters with the
+<code>-c</code> option</li>
+<li><code>sort</code>, which sorts the lines it receives from
+<strong>STDIN</strong>. The <code>-u</code> flag tells it to remove
+duplicate lines from the output</li>
+<li><code>diff</code>, which compares two text files, and outputs the
+differences between them</li>
+</ul>
+<p>As a result of the commands we ran in the above example, we can see
+that there is a mismatch between the chromosome names in the BED and
+FASTA files. Each chromosome name in the BED file is equivalent to the
+corresponding name in the FASTA file with ‘chr’ added to the start.</p>
+<p>Before using these files in a bioinformatics analysis, we need to
+update one of them so that the names match. In the following example we
+fix the BED file by removing ‘chr’ from the start of each line.</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ sed &#39;s/^chr//&#39; yeast_genes.bed &gt; yeast_genes.fixed.bed
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ cut -f1 yeast_genes.fixed.bed | sort -u &gt; yeast_genes_fixed_bed_chromosomes.list
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ diff yeast_genes_fixed_bed_chromosomes.list yeast_genome_fasta_chromosomes.list
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ rm -i *.list
+rm: remove regular file &#39;yeast_genes_bed_chromosomes.list&#39;? y
+rm: remove regular file &#39;yeast_genes_fixed_bed_chromosomes.list&#39;? y
+rm: remove regular file &#39;yeast_genome_fasta_chromosomes.list&#39;? y
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ </code></pre>
+<p>This example uses the <code>sed</code> command, which is used to
+perform a search and replace style substitution on each line in the BED
+file using a regular expression (reminiscent of the <code>prename</code>
+command we saw earlier). Here, as in the previous examples using
+<code>grep -E</code>, the ‘^’ character is a regular expression
+character representing the start of the line. We then confirm that the
+chromosomes are now the same using the <code>diff</code> command. This
+produces no output, which means that there are no differences between
+the chromosome lists.</p>
+<p><br></p>
+</div>
+<div id="manipulating-bed-files-with-awk-and-sort"
+class="section level4">
+<h4>Manipulating BED files with <code>awk</code> and
+<code>sort</code></h4>
+<p>Many standard formats for representing NGS data take the form of
+tabular files, in which each line contains a number of fields, separated
+by a particular character (generally a <em>tab</em> character). The
+<code>yeast_genes.fixed.bed</code> file generated in the previous
+example fits this pattern.</p>
+<p>This example demonstrates how to use <code>awk</code> and
+<code>sort</code> to find the name and length of the longest gene on
+chromosome ‘I’ in the <code>yeast_genes.fixed.bed</code> file:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ awk -F&#39;\t&#39; -v OFS=&#39;\t&#39; &#39;$1==&quot;I&quot; {print $4,$3-$2}&#39; yeast_genes.fixed.bed | sort -k2,2nr | head -1
+YAR050W 4614
+[USERNAME]@bifx-core2:~/course/bioinformatics_on_the_command_line_files$ cd ..
+[USERNAME]@bifx-core2:~/course$</code></pre>
+<p>The above example showcases the power of <code>awk</code> in dealing
+with tabular data. The command
+<code>awk -F'\t' -v OFS='\t' '$1=="I" {print $4,$3-$2}'</code> can be
+decomposed as follows:</p>
+<ul>
+<li><code>-F'\t'</code> tells <code>awk</code> that the field separator
+in the input lines is the <em>tab</em> character (<code>\t</code>)</li>
+<li><code>-v OFS='\t'</code> tells <code>awk</code> that the
+<em>tab</em> character should also be used to separate the fields in the
+output file</li>
+<li><code>'$1=="I" {print $4,$3-$2}'</code> is an <code>awk</code>
+<em>program</em> consisting of a single line. Each line of an
+<code>awk</code> program is a pair with the structure <em>condition
+{action}</em>, and the program is run on each line of the input. In this
+example:
+<ul>
+<li>The <em>condition</em> is <code>$1=="I"</code>, which tells
+<code>awk</code> that the <em>action</em> should be performed if the
+first field is equal to “I”</li>
+<li>The <em>action</em> is <code>print $4,$3-$2</code>, which tells
+<code>awk</code> to output a line to <strong>STDOUT</strong> in which
+the first field is the 4th field of the input line, and the second field
+is the result of subtracting the 2nd field from the 3rd. In this case
+the result is the gene length</li>
+</ul></li>
+</ul>
+<p><em>Note:</em> A good resource to learn more about <code>awk</code>
+is <a href="https://www.gnu.org/software/gawk/manual/">Effective AWK
+Programming</a>.</p>
+<p>The <code>sort</code> command in the above example includes the
+option <code>-k2,2nr</code>. <code>-k</code> tells <code>sort</code> to
+sort by a key, which comprises a start and stop column number, followed
+by two options, <code>n</code>, which tells <code>sort</code> that the
+column contains numbers, and <code>r</code>, which tells
+<code>sort</code> that the lines should be sorted in reverse
+(i.e. descending) order.</p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you remove ‘chr’ from the start of each line of
+<code>yeast_genes.bed</code> without using <code>sed</code>?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Since we know that ‘chr’ is at the start of every line,
+<code>cut -c4- yeast_genes.bed</code> would also work.</p>
+</div>
+</details>
+</div>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How would you find the shortest gene on the plus strand of chromosome
+‘II’ in <code>yeast_genes.fixed.bed</code>?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>You could run
+<code>awk -F'\t' -v OFS='\t' '$1=="II"&amp;&amp;$6=="+" {print $4,$3-$2}' yeast_genes.fixed.bed | sort -k2,2n | head -1</code></p>
+</div>
+</details>
+</div>
+<p><br></p>
+<p><br></p>
+</div>
+</div>
+<div id="case-study-a-simple-rna-seq-analysis-workflow"
+class="section level3">
+<h3>Case study: a simple RNA-Seq analysis workflow</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>It is possible to perform a simple bioinformatics analysis from end
+to end using only the bash command line</li>
+<li>This section presents a simple case study using the
+<code>STAR</code> aligner and <code>bedtools</code></li>
+</ul>
+</div>
+<p><br></p>
+<p>In this section, we will work through a simple pipeline for analysing
+RNA-Seq data, which involves the following steps:</p>
+<ul>
+<li>Start with unaligned reads in FASTQ format</li>
+<li>Align the reads against an index generated from a target genome,
+whose sequence is stored in FASTA format, obtaining an output file in
+BAM format
+<ul>
+<li>Here we use the yeast EF4 genome, and align the reads using <a
+href="https://github.com/alexdobin/STAR">STAR</a></li>
+</ul></li>
+<li>Compute the genome coverage of the aligned reads, obtaining an
+output file in bedGraph format, which can then be viewed in a genome
+browser
+<ul>
+<li>Here we generate the bedGraph file directly from the BED file using
+<a href="https://bedtools.readthedocs.io/">bedtools</a></li>
+</ul></li>
+<li>Count the overlaps between the aligned reads and genomic features,
+stored in BED format, obtaining an output file in BED format, and find
+the genes with the largest number of overlapping reads
+<ul>
+<li>Here we use <a href="https://bedtools.readthedocs.io/">bedtools</a>
+to compute the intersection between the genes and the reference, and use
+standard GNU utilities to find the genes with the most hits</li>
+</ul></li>
+</ul>
+<p>This analysis uses the files in the
+‘bioinformatics_on_the_command_line_files’ directory that we have
+already been working with, and can be performed as follows:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   ├── yeast_genes.fixed.bed
+│   ├── yeast_genome.fasta
+│   └── yeast_genome.fasta.gz
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+1 directory, 7 files
+[USERNAME]@bifx-core2:~/course$ mkdir analysis
+[USERNAME]@bifx-core2:~/course$ cd analysis
+[USERNAME]@bifx-core2:~/course/analysis$ mkdir 00_source_data
+[USERNAME]@bifx-core2:~/course/analysis$ cd 00_source_data
+[USERNAME]@bifx-core2:~/course/analysis/00_source_data$ ln -s ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq 
+[USERNAME]@bifx-core2:~/course/analysis/00_source_data$ cd ..
+[USERNAME]@bifx-core2:~/course/analysis$ tree
+.
+└── 00_source_data
+    └── raw_yeast_rnaseq_data.fastq -&gt; ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+
+1 directory, 1 file
+[USERNAME]@bifx-core2:~/course/analysis$ mkdir 01_star_index
+[USERNAME]@bifx-core2:~/course/analysis$ cd 01_star_index
+[USERNAME]@bifx-core2:~/course/analysis/01_star_index$ ln -s ../../bioinformatics_on_the_command_line_files/yeast_genome.fasta
+[USERNAME]@bifx-core2:~/course/analysis/01_star_index$ nice STAR --runThreadN 5 --runMode genomeGenerate --genomeDir . --genomeFastaFiles ./yeast_genome.fasta --genomeSAindexNbases 10
+Nov 16 15:19:40 ..... started STAR run
+Nov 16 15:19:40 ... starting to generate Genome files
+Nov 16 15:19:40 ... starting to sort Suffix Array. This may take a long time...
+Nov 16 15:19:41 ... sorting Suffix Array chunks and saving them to disk...
+Nov 16 15:19:48 ... loading chunks from disk, packing SA...
+Nov 16 15:19:49 ... finished generating suffix array
+Nov 16 15:19:49 ... generating Suffix Array index
+Nov 16 15:19:50 ... completed Suffix Array index
+Nov 16 15:19:50 ... writing Genome to disk ...
+Nov 16 15:19:50 ... writing Suffix Array to disk ...
+Nov 16 15:19:51 ... writing SAindex to disk
+Nov 16 15:19:52 ..... finished successfully
+[USERNAME]@bifx-core2:~/course/analysis/01_star_index$ cd ..
+[USERNAME]@bifx-core2:~/course/analysis$ tree
+.
+├── 00_source_data
+│   └── raw_yeast_rnaseq_data.fastq -&gt; ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+└── 01_star_index
+    ├── chrLength.txt
+    ├── chrNameLength.txt
+    ├── chrName.txt
+    ├── chrStart.txt
+    ├── Genome
+    ├── genomeParameters.txt
+    ├── Log.out
+    ├── SA
+    ├── SAindex
+    └── yeast_genome.fasta -&gt; ../../bioinformatics_on_the_command_line_files/yeast_genome.fasta
+
+2 directories, 11 files
+[USERNAME]@bifx-core2:~/course/analysis$ mkdir 02_aligned_reads
+[USERNAME]@bifx-core2:~/course/analysis$ cd 02_aligned_reads
+[USERNAME]@bifx-core2:~/course/analysis/02_aligned_reads$ nice STAR --genomeDir ../01_star_index/ --readFilesIn ../00_source_data/raw_yeast_rnaseq_data.fastq --runThreadN 5 --outFileNamePrefix raw_yeast_rnaseq_data. --outSAMtype BAM SortedByCoordinate
+Nov 16 15:22:24 ..... started STAR run
+Nov 16 15:22:24 ..... loading genome
+Nov 16 15:22:24 ..... started mapping
+Nov 16 15:22:26 ..... finished mapping
+Nov 16 15:22:27 ..... started sorting BAM
+Nov 16 15:22:27 ..... finished successfully
+[USERNAME]@bifx-core2:~/course/analysis/02_aligned_reads$ cd ..
+[USERNAME]@bifx-core2:~/course/analysis$ tree
+.
+├── 00_source_data
+│   └── raw_yeast_rnaseq_data.fastq -&gt; ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+├── 01_star_index
+│   ├── chrLength.txt
+│   ├── chrNameLength.txt
+│   ├── chrName.txt
+│   ├── chrStart.txt
+│   ├── Genome
+│   ├── genomeParameters.txt
+│   ├── Log.out
+│   ├── SA
+│   ├── SAindex
+│   └── yeast_genome.fasta -&gt; ../../bioinformatics_on_the_command_line_files/yeast_genome.fasta
+├── 02_aligned_reads
+│   ├── raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam
+│   ├── raw_yeast_rnaseq_data.Log.final.out
+│   ├── raw_yeast_rnaseq_data.Log.out
+│   ├── raw_yeast_rnaseq_data.Log.progress.out
+│   ├── raw_yeast_rnaseq_data.SJ.out.tab
+│   └── raw_yeast_rnaseq_data._STARtmp
+│       └── BAMsort
+│           ├── 0
+│           ├── 1
+│           ├── 2
+│           ├── 3
+│           └── 4
+├── raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam
+├── raw_yeast_rnaseq_data.Log.out
+├── raw_yeast_rnaseq_data.Log.progress.out
+└── raw_yeast_rnaseq_data._STARtmp
+    └── BAMsort
+
+12 directories, 19 files
+[USERNAME]@bifx-core2:~/course/analysis$ mkdir 03_coverage
+[USERNAME]@bifx-core2:~/course/analysis$ cd 03_coverage
+[USERNAME]@bifx-core2:~/course/analysis/03_coverage$ bedtools genomecov -ibam ../02_aligned_reads/raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam &gt; raw_yeast_rnaseq_data.genomecov.bg
+[USERNAME]@bifx-core2:~/course/analysis/03_coverage$ cd ..
+[USERNAME]@bifx-core2:~/course/analysis$ tree
+.
+├── 00_source_data
+│   └── raw_yeast_rnaseq_data.fastq -&gt; ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+├── 01_star_index
+│   ├── chrLength.txt
+│   ├── chrNameLength.txt
+│   ├── chrName.txt
+│   ├── chrStart.txt
+│   ├── Genome
+│   ├── genomeParameters.txt
+│   ├── Log.out
+│   ├── SA
+│   ├── SAindex
+│   └── yeast_genome.fasta -&gt; ../../bioinformatics_on_the_command_line_files/yeast_genome.fasta
+├── 02_aligned_reads
+│   ├── raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam
+│   ├── raw_yeast_rnaseq_data.Log.final.out
+│   ├── raw_yeast_rnaseq_data.Log.out
+│   ├── raw_yeast_rnaseq_data.Log.progress.out
+│   ├── raw_yeast_rnaseq_data.SJ.out.tab
+│   └── raw_yeast_rnaseq_data._STARtmp
+│       └── BAMsort
+│           ├── 0
+│           ├── 1
+│           ├── 2
+│           ├── 3
+│           └── 4
+└── 03_coverage
+    └── raw_yeast_rnaseq_data.genomecov.bg
+
+11 directories, 17 files
+[USERNAME]@bifx-core2:~/course/analysis$ mkdir 04_gene_overlap_counts
+[USERNAME]@bifx-core2:~/course/analysis$ cd 04_gene_overlap_counts
+[USERNAME]@bifx-core2:~/course/analysis/04_gene_overlap_counts$ ln -s ../../bioinformatics_on_the_command_line_files/yeast_genes.fixed.bed
+[USERNAME]@bifx-core2:~/course/analysis/04_gene_overlap_counts$ bedtools intersect -c -a yeast_genes.fixed.bed -b ../02_aligned_reads/raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam | awk -F&#39;\t&#39; &#39;$7&gt;0&#39; | sort -k7,7nr &gt; raw_yeast_overlap_data.gene_overlap_counts.bed
+[USERNAME]@bifx-core2:~/course/analysis/04_gene_overlap_counts$ cd ..
+[USERNAME]@bifx-core2:~/course/analysis$ tree
+.
+├── 00_source_data
+│   └── raw_yeast_rnaseq_data.fastq -&gt; ../../bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+├── 01_star_index
+│   ├── chrLength.txt
+│   ├── chrNameLength.txt
+│   ├── chrName.txt
+│   ├── chrStart.txt
+│   ├── Genome
+│   ├── genomeParameters.txt
+│   ├── Log.out
+│   ├── SA
+│   ├── SAindex
+│   └── yeast_genome.fasta -&gt; ../../bioinformatics_on_the_command_line_files/yeast_genome.fasta
+├── 02_aligned_reads
+│   ├── raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam
+│   ├── raw_yeast_rnaseq_data.Log.final.out
+│   ├── raw_yeast_rnaseq_data.Log.out
+│   ├── raw_yeast_rnaseq_data.Log.progress.out
+│   ├── raw_yeast_rnaseq_data.SJ.out.tab
+│   └── raw_yeast_rnaseq_data._STARtmp
+│       └── BAMsort
+│           ├── 0
+│           ├── 1
+│           ├── 2
+│           ├── 3
+│           └── 4
+├── 03_coverage
+│   └── raw_yeast_rnaseq_data.genomecov.bg
+└── 04_gene_overlap_counts
+    ├── raw_yeast_overlap_data.gene_overlap_counts.bed
+    └── yeast_genes.fixed.bed -&gt; ../../bioinformatics_on_the_command_line_files/yeast_genes.fixed.bed
+
+12 directories, 19 files
+[USERNAME]@bifx-core2:~/course/analysis$ head -10 04_gene_overlap_counts/raw_yeast_overlap_data.gene_overlap_counts.bed
+XII 460922  466869  RDN37-2 .   -   3730
+XII 451785  457732  RDN37-1 .   -   3582
+XII 468812  468931  RDN5-2  .   +   3063
+XII 468826  468958  YLR154C-H   .   -   3063
+XII 472464  472583  RDN5-3  .   +   3060
+XII 472478  472610  YLR156C-A   .   -   3060
+XII 482044  482163  RDN5-4  .   +   3055
+XII 482058  482190  YLR157C-C   .   -   3055
+XII 485696  485815  RDN5-5  .   +   3052
+XII 485710  485842  YLR159C-A   .   -   3052
+[USERNAME]@bifx-core2:~/course/analysis$ cd ..
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+<p><em>Note:</em> In this analysis we have done everything from scratch,
+including creating the genome index. For real analyses on the bifx
+servers it is a good idea to use a pre-generated index, as indices for
+larger genomes take up a lot of space on the server. We have also used
+<code>nice</code> with the <code>STAR</code> command. It is good
+practice to use <code>nice</code> with programs such as aligners that
+could run for a long time and take a lot of resources. <code>nice</code>
+tells Linux to run the <code>STAR</code> command with low priority so
+that it doesn’t slow down the server for other users.</p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+We saw earlier that the longest gene on chromosome I is YAR050W. Use
+<code>bedtools getfasta</code> to find the nucleotide sequence of this
+gene in FASTA format.
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Running <code>bedtools getfasta --help</code> shows us that we need
+to specify and input DNA FASTA file and a BED file with the feature
+co-ordinates. <br> We can extract the feature co-ordinates of YAR050W
+from <code>yeast_genes.fixed.bed</code> using <code>awk</code>, and use
+the output of this command with <code>bedtools getfasta</code>. This is
+illustrated in the following example:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ bedtools getfasta -fi yeast_genome.fasta -bed &lt;(awk -F&#39;\t&#39; &#39;$4==&quot;YAR050W&quot;&#39; yeast_genes.fixed.bed)
+&gt;I:203402-208016
+ATGACAATGCCTCATCGCTATATGTTTTTGGCAGTCTTTACACTTCTGGCACTAACTAGTGTGGCCTCAGGAGCCACAGAGGCGTGCTTACCAGCAGGCCAGAGGAAAAGTGGGATGAATATAAATTTTTACCAGTATTCATTGAAAGATTCCTCCACATATTCGAATGCAGCATATATGGCTTATGGATATGCCTCAAAAACCAAACTAGGTTCTGTCGGAGGACAAACTGATATCTCGATTGATTATAATATTCCCTGTGTTAGTTCATCAGGCACATTTCCTTGTCCTCAAGAAGATTCCTATGGAAACTGGGGATGCAAAGGAATGGGTGCTTGTTCTAATAGTCAAGGAATTGCATACTGGAGTACTGATTTATTTGGTTTCTATACTACCCCAACAAACGTAACCCTAGAAATGACAGGTTATTTTTTACCACCACAGACGGGTTCTTACACATTCAAGTTTGCTACAGTTGACGACTCTGCAATTCTATCAGTAGGTGGTGCAACCGCGTTCAACTGTTGTGCTCAACAGCAACCGCCGATCACATCAACGAACTTTACCATTGACGGTATCAAGCCATGGGGTGGAAGTTTGCCACCTAATATCGAAGGAACCGTCTATATGTACGCTGGCTACTATTATCCAATGAAGGTTGTTTACTCGAACGCTGTTTCTTGGGGTACACTTCCAATTAGTGTGACACTTCCAGATGGTACCACTGTAAGTGATGACTTCGAAGGGTACGTCTATTCCTTTGACGATGACCTAAGTCAATCTAACTGTACTGTCCCTGACCCTTCAAATTATGCTGTCAGTACCACTACAACTACAACGGAACCATGGACCGGTACTTTCACTTCTACATCTACTGAAATGACCACCGTCACCGGTACCAACGGCGTTCCAACTGACGAAACCGTCATTGTCATCAGAACTCCAACAACTGCTAGCACCATCATAACTACAACTGAGCCATGGAACAGCACTTTTACCTCTACTTCTACCGAATTGACCACAGTCACTGGCACCAATGGTGTACGAACTGACGAAACCATCATTGTAATCAGAACACCAACAACAGCCACTACTGCCATAACTACAACTGAGCCATGGAACAGCACTTTTACCTCTACTTCTACCGAATTGACCACAGTCACCGGTACCAATGGTTTGCCAACTGATGAGACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACAACTCAGCCATGGAACGACACTTTTACCTCTACTTCTACCGAATTGACCACAGTCACCGGTACCAATGGTTTGCCAACTGATGAGACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACAACTCAGCCATGGAACGACACTTTTACCTCTACTTCTACCGAATTGACCACAGTCACCGGTACCAATGGTTTGCCAACTGATGAGACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACAACTCAGCCATGGAACGACACTTTTACCTCTACATCCACTGAAATCACCACCGTCACCGGTACCAATGGTTTGCCAACTGATGAGACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACACCTCAGCCATGGAACGACACTTTTACCTCTACATCCACTGAAATGACCACCGTCACCGGTACCAACGGTTTGCCAACTGATGAAACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATAACTACAACTGAGCCATGGAACAGCACTTTTACCTCTACATCCACTGAAATGACCACCGTCACCGGTACCAACGGTTTGCCAACTGATGAAACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATAACTACAACTCAGCCATGGAACGACACTTTTACCTCTACATCCACTGAAATGACCACCGTCACCGGTACCAACGGTTTGCCAACTGATGAAACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACAACTCAGCCATGGAACGACACTTTTACCTCTACATCCACTGAAATCACCACCGTCACCGGTACCACCGGTTTGCCAACTGATGAGACCATCATTGTCATCAGAACACCAACAACAGCCACTACTGCCATGACTACAACTCAGCCATGGAACGACACTTTTACCTCTACATCCACTGAAATGACCACCGTCACCGGTACCAACGGCGTTCCAACTGACGAAACCGTCATTGTCATCAGAACTCCAACTAGTGAAGGTCTAATCAGCACCACCACTGAACCATGGACTGGTACTTTCACCTCTACATCCACTGAGATGACCACCGTCACCGGTACTAACGGTCAACCAACTGACGAAACCGTGATTGTTATCAGAACTCCAACCAGTGAAGGTTTGGTTACAACCACCACTGAACCATGGACTGGTACTTTTACTTCTACATCTACTGAAATGACCACCATTACTGGAACCAACGGCGTTCCAACTGACGAAACCGTCATTGTCATCAGAACTCCAACCAGTGAAGGTCTAATCAGCACCACCACTGAACCATGGACTGGTACTTTTACTTCTACATCTACTGAAATGACCACCATTACTGGAACCAATGGTCAACCAACTGACGAAACCGTTATTGTTATCAGAACTCCAACTAGTGAAGGTCTAATCAGCACTACAACGGAACCATGGACCGGTACTTTCACTTCTACATCTACTGAAATGACGCACGTCACCGGTACCAACGGCGTTCCAACTGACGAAACCGTCATTGTCATCAGAACTCCAACCAGTGAAGGTCTAATCAGCACCACCACTGAACCATGGACTGGCACTTTCACTTCGACTTCCACTGAGGTTACCACCATCACTGGAACCAACGGTCAACCAACTGACGAAACTGTGATTGTTATCAGAACTCCAACCAGTGAAGGTCTAATCAGCACCACCACTGAACCATGGACTGGTACTTTCACTTCTACATCTACTGAAATGACCACCGTCACCGGTACTAACGGTCAACCAACTGACGAAACCGTGATTGTTATCAGAACTCCAACCAGTGAAGGTTTGGTTACAACCACCACTGAACCATGGACTGGTACTTTTACTTCGACTTCCACTGAAATGTCTACTGTCACTGGAACCAATGGCTTGCCAACTGATGAAACTGTCATTGTTGTCAAAACTCCAACTACTGCCATCTCATCCAGTTTGTCATCATCATCTTCAGGACAAATCACCAGCTCTATCACGTCTTCGCGTCCAATTATTACCCCATTCTATCCTAGCAATGGAACTTCTGTGATTTCTTCCTCAGTAATTTCTTCCTCAGTCACTTCTTCTCTATTCACTTCTTCTCCAGTCATTTCTTCCTCAGTCATTTCTTCTTCTACAACAACCTCCACTTCTATATTTTCTGAATCATCTAAATCATCCGTCATTCCAACCAGTAGTTCCACCTCTGGTTCTTCTGAGAGCGAAACGAGTTCAGCTGGTTCTGTCTCTTCTTCCTCTTTTATCTCTTCTGAATCATCAAAATCTCCTACATATTCTTCTTCATCATTACCACTTGTTACCAGTGCGACAACAAGCCAGGAAACTGCTTCTTCATTACCACCTGCTACCACTACAAAAACGAGCGAACAAACCACTTTGGTTACCGTGACATCCTGCGAGTCTCATGTGTGCACTGAATCCATCTCCCCTGCGATTGTTTCCACAGCTACTGTTACTGTTAGCGGCGTCACAACAGAGTATACCACATGGTGCCCTATTTCTACTACAGAGACAACAAAGCAAACCAAAGGGACAACAGAGCAAACCACAGAAACAACAAAACAAACCACGGTAGTTACAATTTCTTCTTGTGAATCTGACGTATGCTCTAAGACTGCTTCTCCAGCCATTGTATCTACAAGCACTGCTACTATTAACGGCGTTACTACAGAATACACAACATGGTGTCCTATTTCCACCACAGAATCGAGGCAACAAACAACGCTAGTTACTGTTACTTCCTGCGAATCTGGTGTGTGTTCCGAAACTGCTTCACCTGCCATTGTTTCGACGGCCACGGCTACTGTGAATGATGTTGTTACGGTCTATCCTACATGGAGGCCACAGACTGCGAATGAAGAGTCTGTCAGCTCTAAAATGAACAGTGCTACCGGTGAGACAACAACCAATACTTTAGCTGCTGAAACGACTACCAATACTGTAGCTGCTGAGACGATTACCAATACTGGAGCTGCTGAGACGAAAACAGTAGTCACCTCTTCGCTTTCAAGATCTAATCACGCTGAAACACAGACGGCTTCCGCGACCGATGTGATTGGTCACAGCAGTAGTGTTGTTTCTGTATCCGAAACTGGCAACACCAAGAGTCTAACAAGTTCCGGGTTGAGTACTATGTCGCAACAGCCTCGTAGCACACCAGCAAGCAGCATGGTAGGATATAGTACAGCTTCTTTAGAAATTTCAACGTATGCTGGCAGTGCCAACAGCTTACTGGCCGGTAGTGGTTTAAGTGTCTTCATTGCGTCCTTATTGCTGGCAATTATTTAA
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+</div>
+</details>
+</div>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you use <code>bedtools genomecov</code> to make separate
+bedGraph files for the plus and minus strands?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Running <code>bedtools genomecov --help</code> shows us that there is
+a <code>-strand</code> option. <br> To make a bedGraph file for the plus
+strand, run
+<code>bedtools genomecov -strand + -ibam 02_aligned_reads/raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam</code>
+<br> To make a bedGraph file for the minus strand, run
+<code>bedtools genomecov -strand - -ibam 02_aligned_reads/raw_yeast_rnaseq_data.Aligned.sortedByCoord.out.bam</code></p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

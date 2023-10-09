@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Working with the file system</title>
+
+<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="01-introduction.html">Introduction</a>
+</li>
+<li>
+  <a href="01-start.html">Getting Started</a>
+</li>
+<li>
+  <a href="02-filesystem.html">Working with the file system</a>
+</li>
+<li>
+  <a href="03-files.html">Working with files</a>
+</li>
+<li>
+  <a href="04-processes.html">Working with processes</a>
+</li>
+<li>
+  <a href="05-analysis.html">Bioinformatics data analysis</a>
+</li>
+<li>
+  <a href="06-scripts.html">Scripts</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Working with the file system</h1>
+
+</div>
+
+
+<head>
+<script src="https://kit.fontawesome.com/ece750edd7.js" crossorigin="anonymous"></script>
+</head>
+<hr />
+<p>In this section you will learn how to explore the Linux file system,
+and how to create, move, delete and edit files and directories.</p>
+<p><br></p>
+<div id="introducing-the-linux-file-system" class="section level3">
+<h3>Introducing the Linux file system</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>In Linux, like other operating systems, the file system is stuctured
+as a tree
+<ul>
+<li>The top level directory is known as the root directory, and is
+referred to on the command line as <code>/</code></li>
+</ul></li>
+<li>The file system contains regular files, directories, and symbolic
+links to other files
+<ul>
+<li>Each file has a unique path in the file system, along with other
+attributes such as its size, when it was last modified, and the
+permissions associated with it</li>
+</ul></li>
+<li>Each user’s files are generally stored in a directory called the
+user’s <em>home directory</em>, also referred to as <code>~</code>
+<ul>
+<li>Home directories are normally found in <code>/home</code>, however
+on the bifx servers user home directories are also found in
+<code>/homes</code> and <code>/homes2</code></li>
+</ul></li>
+<li>bash keeps track of the <em>current working directory</em> that the
+shell is in
+<ul>
+<li>When a user logs in to a Linux system, it starts in the user’s own
+home directory by default</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<div id="the-linux-file-system" class="section level4">
+<h4>The Linux file system</h4>
+<hr />
+<p><img src="images/filesystem.png" style="width:65.0%" /></p>
+<p><br></p>
+<p>The Linux file system, where all files in a Linux system are stored,
+is structured as a tree with a single root directory, known as
+<code>/</code>, as shown in the above image. The root directory has a
+number of subdirectories. The most important for us on the bifx servers
+are the <code>/homes</code> and <code>/homes2</code> folders, as these
+are where users’ home directories are stored. Each user’s files are
+generally stored in their home directory, and by default users on the
+bifx servers are not permitted to create files outside their own home
+directory. You can find out the path to your home directory by running
+the command <code>echo $HOME</code>.</p>
+<p><br></p>
+</div>
+<div id="file-paths-in-linux" class="section level4">
+<h4>File paths in Linux</h4>
+<hr />
+<p>File paths in Linux can be either <em>absolute</em> paths, or
+<em>relative</em> paths.</p>
+<p><br></p>
+<div id="absolute-paths" class="section level5">
+<h5>Absolute paths</h5>
+<p>Each file in the Linux file system tree is uniquely identified by its
+absolute path. The absolute path comprises a list of the parent
+directories of the file, starting from the root directory, separated by
+the <code>/</code> character, followed by the name of the file. The name
+of a file, and the path to its parent directory, can be extracted from
+its path using the <code>basename</code> and <code>dirname</code>
+commands:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ basename /library/training/bioinformatics_on_the_command_line
+bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:~$ dirname /library/training/bioinformatics_on_the_command_line
+/library/training
+[USERNAME]@bifx-core2:~$ </code></pre>
+<p>In Linux file names can contain almost any character other than
+<code>/</code>. However, many characters, including spaces and special
+characters such as ’ and “, can make files difficult to work with, so,
+in general, it’s better to stick with letters, numbers, underscores,
+dashes, and dots when naming files. If you do have to work with a file
+that contains special characters, you can either put the file path in
+quotes or use backslashes to escape the special characters:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ basename /library/training/bioinformatics_on_the_command_line/file name with spaces
+basename: extra operand ‘with’
+Try &#39;basename --help&#39; for more information.
+[USERNAME]@bifx-core2:~$ basename &#39;/library/training/bioinformatics_on_the_command_line/file name with spaces&#39;
+file name with spaces
+[USERNAME]@bifx-core2:~$ basename /library/training/bioinformatics_on_the_command_line/file\ name\ with\ spaces
+file name with spaces
+[USERNAME]@bifx-core2:~$</code></pre>
+<p><em>Note:</em> Tab completion works with filenames as well as command
+names.</p>
+<p>The <code>pwd</code> command shows the absolute path of the current
+working directory:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ pwd
+/homes/[USERNAME]
+[USERNAME]@bifx-core2:~$</code></pre>
+<p><br></p>
+</div>
+<div id="relative-paths" class="section level5">
+<h5>Relative paths</h5>
+<p>While absolute paths provide an unambiguous way of referring to
+files, they can be cumbersome. For this reason, Linux makes it possible
+to define paths relative to the current working directory or the user’s
+home directory:</p>
+<ul>
+<li><code>~</code> refers to the user’s home directory</li>
+<li><code>.</code> refers to the current working directory</li>
+<li><code>..</code> refers to the parent directory of the current
+working directory
+<ul>
+<li><code>../..</code> refers to the parent directory of the parent
+directory of the current working directory, <code>../../..</code> refers
+to the parent directory of that directory, and so on</li>
+</ul></li>
+</ul>
+<p>If you just use the name of a file, Linux assumes that you are
+referring to a file in the current working directory.</p>
+<p>The <code>realpath</code> command can be used to show the absolute
+path corresponding to a relative path:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ realpath ~
+/homes/[USERNAME]
+[USERNAME]@bifx-core2:~$ realpath .
+/homes/[USERNAME]
+[USERNAME]@bifx-core2:~$ realpath ..
+/homes
+[USERNAME]@bifx-core2:~$ </code></pre>
+<p><br></p>
+</div>
+<div id="glob-patterns" class="section level5">
+<h5>Glob patterns</h5>
+<p>Linux also makes it possible to include wildcards in file paths,
+making it possible to refer to a group of file paths at once. Paths that
+include wildcards are called glob patterns. Useful wildcards
+include:</p>
+<ul>
+<li><code>*</code> which matches any sequence of characters</li>
+<li><code>?</code> which matches any single character</li>
+<li><code>[]</code> which matches a single character within the square
+brackets
+<ul>
+<li>for example, [aA] would match ‘a’ or ‘A’</li>
+<li>ranges of numbers are allowed, so [1-5] matches 1, 2, 3, 4, or
+5</li>
+</ul></li>
+</ul>
+<p>When bash sees a glob pattern, it expands it into a list of file
+paths that match the pattern (separated by spaces). A convenient way to
+experiment with glob patterns (and to make sure they match the files you
+want them to) is to use the <code>echo</code> command, which prints its
+arguments to the command line:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ echo /homes/genomes/mouse/*
+/homes/genomes/mouse/GRCm38 /homes/genomes/mouse/mm10 /homes/genomes/mouse/mm9 /homes/genomes/mouse/UCSC
+[USERNAME]@bifx-core2:~$ echo /homes/genomes/mouse/mm?
+/homes/genomes/mouse/mm9
+[USERNAME]@bifx-core2:~$ echo /homes/genomes/mouse/mm*
+/homes/genomes/mouse/mm10 /homes/genomes/mouse/mm9
+[USERNAME]@bifx-core2:~$</code></pre>
+<p><em>Note:</em> If you write an argument to a command that contains
+glob wildcard characters, but is not a glob pattern, always remember to
+put it in quotes to prevent it from being expanded by the shell. It’s
+also worth remembering that glob patterns do not match files that start
+with a dot. These are <em>hidden files</em> and are often used as
+configuration files that users do not normally need to see.</p>
+<p><br></p>
+</div>
+</div>
+<div id="file-types-and-attributes-in-linux" class="section level4">
+<h4>File types and attributes in Linux</h4>
+<hr />
+<p>The Linux file system contains a three main types of file:</p>
+<ul>
+<li><strong>Regular files</strong>, which contain data</li>
+<li><strong>Directories</strong>, which contain other files or
+directories</li>
+<li><strong>Symbolic links</strong>, which are aliases for files and
+folders</li>
+</ul>
+<p>As well as its name and path, each file has a number of attributes
+associated with it, such as its size, when it was last modified, and the
+permissions associated with it. You can check the attributes associated
+with a file using the <code>stat</code> command:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ stat /library/training/bioinformatics_on_the_command_line/bioinformatics_on_the_command_line_files.tar.gz
+  File: /library/training/bioinformatics_on_the_command_line/bioinformatics_on_the_command_line_files.tar.gz
+  Size: 4059820     Blocks: 7975       IO Block: 8192   regular file
+Device: 37h/55d Inode: 13189       Links: 1
+Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2020-11-12 12:56:58.543765691 +0000
+Modify: 2020-11-12 12:53:47.358367501 +0000
+Change: 2020-11-12 12:56:31.032140047 +0000
+ Birth: -
+[USERNAME]@bifx-core2:~$</code></pre>
+<p>The output of the <code>stat</code> command shows us:</p>
+<ul>
+<li>What type of file this is (a regular file)</li>
+<li>The size of the file (4059820)</li>
+<li>The identity and group of the owner of the file (root)</li>
+<li>When the file was last accessed, modified, and changed</li>
+<li>The permissions on the file (-rw-r–r–)
+<ul>
+<li>The first character of the permission string tells us whether it is
+a file or directory</li>
+<li>The rest of the string can be divided into three groups (rw-, r–,
+and r–), representing the permissions granted to the user that owns the
+file, the group associated with the file, and all users</li>
+<li>There are three types of permission. These are permission to read
+the file (<code>r</code>), permission to write to the file
+(<code>w</code>), and permission to execute the file
+(<code>x</code>)</li>
+</ul></li>
+</ul>
+<p><em>Note:</em> When you run the <code>stat</code> command on a
+directory it shows the size of the directory itself, not the size of the
+directory with all of its contents (which is normally what you want). To
+find the size of a directory and its contents, you can use the
+<code>du -sh</code> command:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ stat /library/training/bioinformatics_on_the_command_line
+  File: /library/training/bioinformatics_on_the_command_line
+  Size: 4           Blocks: 41         IO Block: 4096   directory
+Device: 37h/55d Inode: 13190       Links: 2
+Access: (0755/drwxr-xr-x)  Uid: (    0/    root)   Gid: (    0/    root)
+Access: 2020-11-13 10:21:45.604446040 +0000
+Modify: 2020-11-12 22:13:44.568434982 +0000
+Change: 2020-11-12 22:13:44.568434982 +0000
+ Birth: -
+[USERNAME]@bifx-core2:~$ du -sh /library/training/bioinformatics_on_the_command_line 
+4.0M    /library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:~$ </code></pre>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Create a glob pattern that matches <em>/homes/genomes/mouse/GRCm38</em>
+and <em>/homes/genomes/mouse/UCSC</em> only.
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>One option would be <em>/homes/genomes/mouse/[GU]*</em></p>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Create a glob pattern that matches everything in
+<em>/homes/genomes/mouse</em> except for
+<em>/homes/genomes/mouse/UCSC</em>.
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>One option would be <em>/homes/genomes/mouse/*[0-9]</em></p>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Who has permission to read the file
+‘/library/training/bioinformatics_on_the_command_line/bioinformatics_on_the_command_line_files.tar.gz’?
+Who is permitted to write to it? Is anyone permitted to execute it?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Everyone on the server can read the file. The user that owns the file
+can read and write to it. Nobody is permitted to execute this file.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+</div>
+<div id="exploring-the-file-system" class="section level3">
+<h3>Exploring the file system</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li><code>cd</code> changes the current working directory</li>
+<li><code>pushd</code> also changes the current working directory, but
+keeps a history of where you’ve been
+<ul>
+<li>Use <code>popd</code> to go back, and <code>dirs</code> to look at
+the history</li>
+</ul></li>
+<li>The <code>ls</code> command lists the files in the current working
+directory</li>
+<li>The <code>tree</code> command provides a readable summary of the
+files in the current directory and its subdirectories</li>
+<li>The <code>find</code> command recursively searches for files in the
+current file system</li>
+</ul>
+</div>
+<p><br></p>
+<p>The following example demonstrates how we can navigate within the
+file system, and view and find files:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ cd /library/training/bioinformatics_on_the_command_line 
+[USERNAME]@bifx-core2:/library/training/bioinformatics_on_the_command_line$ ls
+analysis_improved.sh   analysis_raw.sh   bioinformatics_on_the_command_line_files.tar.gz  &#39;file name with spaces&#39;
+[USERNAME]@bifx-core2:/library/training/bioinformatics_on_the_command_line$ ls -lah
+drwxr-xr-x 2 root root    6 Nov 16 12:53  .
+drwxr-xr-x 3 root root    3 Nov 12 12:56  ..
+-rwxr-xr-x 1 root root 3.2K Nov 16 12:54  analysis_improved.sh
+-rw-r--r-- 1 root root 1.3K Nov 16 12:53  analysis_raw.sh
+-rw-r--r-- 1 root root 3.9M Nov 12 12:53  bioinformatics_on_the_command_line_files.tar.gz
+-rw-r--r-- 1 root root    0 Nov 12 21:58 &#39;file name with spaces&#39;
+[USERNAME]@bifx-core2:/library/training/bioinformatics_on_the_command_line$ ls -lah *.gz
+-rw-r--r-- 1 root root 3.9M Nov 12 12:53 bioinformatics_on_the_command_line_files.tar.gz
+[USERNAME]@bifx-core2:/library/training/bioinformatics_on_the_command_line$ pushd /homes/genomes/
+/homes/genomes /library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:/homes/genomes$ pushd /library/training/
+/library/training /homes/genomes /library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:/library/training$ dirs
+/library/training /homes/genomes /library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:/library/training$ tree
+.
+└── bioinformatics_on_the_command_line
+    ├── analysis_improved.sh
+    ├── analysis_raw.sh
+    ├── bioinformatics_on_the_command_line_files.tar.gz
+    └── file name with spaces
+
+1 directory, 4 files
+[USERNAME]@bifx-core2:/library/training$ popd
+/homes/genomes /library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:/homes/genomes$ find ./mouse/mm10/ -type f -name &#39;*.bed&#39;
+./mouse/mm10/mm10_repeat_masker.bed
+./mouse/mm10/mm10-liftover-blacklist.bed
+./mouse/mm10/annotation/GSE17051_cLAD_regions.mm10.bed
+./mouse/mm10/annotation/Mus_musculus.GRCm38.79.edited.bed
+./mouse/mm10/annotation/mm10_cgi.liftover.bed
+./mouse/mm10/annotation/mm10-liftover-blacklist.bed
+./mouse/mm10/annotation/GSE17051_ciLAD_regions.mm10.bed
+./mouse/mm10/annotation/Ensembl.transcripts.bed
+./mouse/mm10/annotation/mm10.blacklist.bed
+./mouse/mm10/annotation/mm10-liftover-blacklist.OLD.bed
+./mouse/mm10/mm10repeats.bed
+[USERNAME]@bifx-core2:/homes/genomes$ popd
+/library/training/bioinformatics_on_the_command_line
+[USERNAME]@bifx-core2:/library/training/bioinformatics_on_the_command_line$ cd
+[USERNAME]@bifx-core2:~$ 
+</code></pre>
+<p><em>Note:</em> In this example we have used the command
+<code>ls -lah</code>. This is an example of a shorthand that you can use
+in the bash shell when specifying multiple flags. <code>ls -lah</code>
+is equivalent to <code>ls -l -a -h</code>.</p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+List all of the paths to files named ‘genome.fa’ in the directory
+‘/homes/genomes/mouse/’
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Run
+<code>find /homes/genomes/mouse/ -type f -name 'genome.fa'</code></p>
+</div>
+</details>
+</div>
+<p><br></p>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+Using the commands you’ve learned in this section, explore the
+/homes/genomes/ directory on the server. Which organisms do we have
+genomes for (no need to include subdirectories)? Which genome releases
+do we have for each of these organisms? Are there any files in
+’/homes/genomes/mouse over 6GB in size?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Run <code>ls /homes/genomes/</code> to list the organisms in
+‘/homes/genomes’. Run
+<code>find /homes/genomes/ -maxdepth 2 -type d</code> to list the
+subdirectories of the directories representing the organisms, which
+represent genome releases. Run
+<code>find /homes/genomes/mouse -type f -size +6G</code> to list the
+files over 6GB in size.</p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+<div id="creating-and-deleting-files" class="section level3">
+<h3>Creating and deleting files</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Files can be created using <code>touch</code>, by a text editor, or
+by redirecting the output of a program</li>
+<li>Symbolic links can be created using <code>ln -s</code></li>
+<li>Directories can be created using <code>mkdir</code>, and empty
+directories can be removed using <code>rmdir</code></li>
+<li>The <code>rm</code> command can be used to delete files, links, and
+directories along with their contents (using the <code>-r</code> flag)
+<ul>
+<li>There is no recycle bin in Linux, so <code>rm</code> should be used
+with care. The <code>-i</code> flag can be used to prompt for
+confirmation before deleting files</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>The following example demonstrates how we can create and remove
+files, directories and links:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~$ mkdir course
+[USERNAME]@bifx-core2:~$ cd course
+[USERNAME]@bifx-core2:~/course$ mkdir -p dir1 dir2 dir3/dir4
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── dir1
+├── dir2
+└── dir3
+    └── dir4
+    
+4 directories, 0 files
+[USERNAME]@bifx-core2:~/course$ touch file1
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── dir1
+├── dir2
+├── dir3
+│   └── dir4
+└── file1
+
+4 directories, 1 file
+[USERNAME]@bifx-core2:~/course$ cd dir1
+[USERNAME]@bifx-core2:~/course$ ln -s ../file1
+[USERNAME]@bifx-core2:~/course$ cd ..
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── dir1
+│   └── file1 -&gt; ../file1
+├── dir2
+├── dir3
+│   └── dir4
+└── file1
+
+4 directories, 2 files
+[USERNAME]@bifx-core2:~/course$ rmdir *
+rmdir: failed to remove &#39;dir1&#39;: Directory not empty
+rmdir: failed to remove &#39;dir3&#39;: Directory not empty
+rmdir: failed to remove &#39;file1&#39;: Not a directory
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── dir1
+│   └── file1 -&gt; ../file1
+├── dir3
+│   └── dir4
+└── file1
+
+3 directories, 2 files
+[USERNAME]@bifx-core2:~/course$ rm -ri *
+rm: descend into directory &#39;dir1&#39;? y
+rm: remove symbolic link &#39;dir1/file1&#39;? y
+rm: remove directory &#39;dir1&#39;? n
+rm: descend into directory &#39;dir3&#39;? y
+rm: remove directory &#39;dir3/dir4&#39;? y
+rm: remove directory &#39;dir3&#39;? y
+rm: remove regular empty file &#39;file1&#39;? n
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── dir1
+└── file1
+
+1 directory, 1 file
+[USERNAME]@bifx-core2:~/course$ rmdir dir1
+[USERNAME]@bifx-core2:~/course$ rm -i file1
+rm: remove regular empty file &#39;file1&#39;? y
+[USERNAME]@bifx-core2:~/course$ tree
+.
+
+0 directories, 0 files
+[USERNAME]@bifx-core2:~/course$</code></pre>
+<p>The example demonstrates a number of commands:</p>
+<ul>
+<li><code>touch</code> to create an empty file
+<ul>
+<li>This can also be used to update the timestamp on an existing
+file</li>
+</ul></li>
+<li><code>mkdir</code> to create empty directories
+<ul>
+<li>Add -p to create nested directories by specifying paths</li>
+</ul></li>
+<li><code>ln -s</code> to create a symbolic link to a file or
+directory</li>
+<li><code>rmdir</code> to delete empty directories, without deleting
+files or non-empty directories</li>
+<li><code>rm</code> command
+<ul>
+<li>Add -r to remove directories (and their contents)</li>
+<li>Add -i to ask for confirmation before deleting</li>
+</ul></li>
+</ul>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you create a symbolic link which has a different name to the
+file you’re linking to?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>Use <code>ln -s -T [path to target file] [new name]</code></p>
+</div>
+</details>
+</div>
+<p><br></p>
+</div>
+<div id="copying-and-moving-files-and-directories"
+class="section level3">
+<h3>Copying and moving files and directories</h3>
+<hr />
+<br>
+<div class="key-points">
+<h2>
+<i class="fas fa-thumbtack"></i> Key Points
+</h2>
+<ul>
+<li>Files and directories can be copied using <code>cp</code>
+<ul>
+<li>To copy a directory along with its contents, use the <code>-r</code>
+flag</li>
+</ul></li>
+<li>Archive files in <em>tar</em> format can be extracted using the
+<code>tar</code> command</li>
+<li>Directories can be synchronised using <code>rsync</code>, which only
+copies updated files</li>
+<li>Files and directories can be moved or renamed using <code>mv</code>
+<ul>
+<li>Groups of files can be renamed using <code>prename</code></li>
+</ul></li>
+<li>Attributes of files and directories can be changed using
+<code>chmod</code> and <code>touch</code>
+<ul>
+<li><code>touch</code> updates the timestamp of an existing file</li>
+<li><code>chmod</code> changes the permissions on a file</li>
+</ul></li>
+</ul>
+</div>
+<p><br></p>
+<p>The following example demonstrates how we can copy files and
+directories, extract archive files, synchronise directories, and update
+file permissions:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ cp /library/training/bioinformatics_on_the_command_line/bioinformatics_on_the_command_line_files.tar.gz ./
+[USERNAME]@bifx-core2:~/course$ tar xzvf bioinformatics_on_the_command_line_files.tar.gz
+bioinformatics_on_the_command_line_files/
+bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+bioinformatics_on_the_command_line_files/yeast_genome.fasta
+bioinformatics_on_the_command_line_files/README
+bioinformatics_on_the_command_line_files/yeast_genes.bed
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+1 directory, 5 files
+[USERNAME]@bifx-core2:~/course$ cp -a -r bioinformatics_on_the_command_line_files bioinformatics_on_the_command_line_files-copy
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files-copy
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README.txt
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+2 directories, 9 files
+[USERNAME]@bifx-core2:~/course$ mv bioinformatics_on_the_command_line_files-copy/README ./README.txt
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files-copy
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files.tar.gz
+└── README.txt
+
+2 directories, 9 files
+[USERNAME]@bifx-core2:~/course$ rsync -av bioinformatics_on_the_command_line_files/ bioinformatics_on_the_command_line_files-copy/
+sending incremental file list
+./
+README
+
+sent 765 bytes  received 38 bytes  1,606.00 bytes/sec
+total size is 14,147,099  speedup is 17,617.81
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files-copy
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files.tar.gz
+└── README.txt
+
+2 directories, 10 files
+[USERNAME]@bifx-core2:~/course$ prename &#39;s/yeast/s.cerevisiae/&#39; bioinformatics_on_the_command_line_files-copy/*
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+├── bioinformatics_on_the_command_line_files-copy
+│   ├── raw_s.cerevisiae_rnaseq_data.fastq
+│   ├── README
+│   ├── s.cerevisiae_genes.bed
+│   └── s.cerevisiae_genome.fasta
+├── bioinformatics_on_the_command_line_files.tar.gz
+└── README.txt
+
+2 directories, 10 files
+[USERNAME]@bifx-core2:~/course$ rm -r -i bioinformatics_on_the_command_line_files-copy README.txt
+rm: descend into directory &#39;bioinformatics_on_the_command_line_files-copy/&#39;? y
+rm: remove regular file &#39;bioinformatics_on_the_command_line_files-copy/s.cerevisiae_genome.fasta&#39;? y
+rm: remove regular file &#39;bioinformatics_on_the_command_line_files-copy/raw_s.cerevisiae_rnaseq_data.fastq&#39;? y
+rm: remove regular file &#39;bioinformatics_on_the_command_line_files-copy/README&#39;? y
+rm: remove regular file &#39;bioinformatics_on_the_command_line_files-copy/s.cerevisiae_genes.bed&#39;? y
+rm: remove directory &#39;bioinformatics_on_the_command_line_files-copy/&#39;? y
+rm: remove regular file &#39;README.txt&#39;? y
+[USERNAME]@bifx-core2:~/course$ tree
+.
+├── bioinformatics_on_the_command_line_files
+│   ├── raw_yeast_rnaseq_data.fastq
+│   ├── README
+│   ├── yeast_genes.bed
+│   └── yeast_genome.fasta
+└── bioinformatics_on_the_command_line_files.tar.gz
+
+1 directory, 5 files
+[USERNAME]@bifx-core2:~/course$ chmod a-w bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+[USERNAME]@bifx-core2:~/course$ rm bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq
+rm: remove write-protected regular file &#39;bioinformatics_on_the_command_line_files/raw_yeast_rnaseq_data.fastq&#39;? n
+[USERNAME]@bifx-core2:~/course$</code></pre>
+<p>This example has demonstrated a number of commands:</p>
+<ul>
+<li><code>cp</code> to copy files and directories (with the
+<code>-r</code> flag set)
+<ul>
+<li>The <code>-a</code> flag preserves file attributes when they are
+copied</li>
+</ul></li>
+<li><code>rsync</code> to synchronise directories</li>
+<li><code>mv</code> to move files or directories</li>
+<li><code>prename</code> to perform ‘search and replace’ style renaming
+of files</li>
+<li><code>touch</code> to update the timestamp of an existing file</li>
+<li><code>chmod</code> to change the permissions on a file
+<ul>
+<li>It’s always a good idea to make raw data files read only as we did
+in the example, as it makes it more difficult to remove or overwrite
+them accidentally</li>
+</ul></li>
+</ul>
+<br>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How would you change the permissions on a file so that nobody can
+execute it, and only the owner of the file can read it or write to it?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p>You can do this using the following steps:</p>
+<pre class="bash"><code>[USERNAME]@bifx-core2:~/course$ touch chmod_test
+[USERNAME]@bifx-core2:~/course$ ls -l chmod_test
+
+-rw-rw-r-- 1 [USERNAME] [USERNAME] 0 Nov 14 12:51 chmod_test
+[USERNAME]@bifx-core2:~/course$ chmod ugo-rwx chmod_test
+[USERNAME]@bifx-core2:~/course$ chmod u+rw chmod_test
+[USERNAME]@bifx-core2:~/course$ ls -l chmod_test
+
+-rw------- 1 [USERNAME] [USERNAME] 0 Nov 14 12:51 chmod_test
+[USERNAME]@bifx-core2:~/course$ </code></pre>
+</div>
+</details>
+</div>
+<p><br></p>
+<div class="challenge">
+<h2>
+<i class="fas fa-pencil-alt"></i> Challenge:
+</h2>
+How could you check which files <code>rsync</code> will copy across when
+synchronising folders without actually copying them?
+<details>
+<summary>
+</summary>
+<div class="solution">
+<h2>
+<i class="far fa-eye"></i> Solution:
+</h2>
+<p><code>rsync</code> has a <code>--dry-run</code> flag that allows you
+to do this.</p>
+</div>
+</details>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
