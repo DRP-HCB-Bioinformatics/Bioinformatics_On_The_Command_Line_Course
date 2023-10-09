@@ -3,7 +3,7 @@ title: "Working with files"
 output: 
   html_document:
     df_print: paged
-    css: "style.css"
+    css: "css/style.css"
 ---
 
 <head>

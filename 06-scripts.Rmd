@@ -3,7 +3,7 @@ title: "Scripting for reproducible data analysis"
 output: 
   html_document:
     df_print: paged
-    css: "style.css"
+    css: "css/style.css"
 ---
 
 <head>
