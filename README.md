@@ -1,6 +1,4 @@
-# Bioinformatics_On_The_Command_Line_Course
-
-## Introduction to Bioinformatics on the Command Line
+# Introduction to Bioinformatics on the Command Line
 
 This introductory course will cover the basics of bioinformatics data analysis using the bash shell. The course is suitable for beginners, and will guide you from the very basics of using bash to writing custom scripts that will allow you to create your own reproducible data analysis workflows. The course will cover the following topics:
 - Getting started with bash
