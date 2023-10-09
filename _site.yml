@@ -3,9 +3,9 @@ navbar:
   title: "Home"
   left:
     - text: "Introduction"
-      href: 01-introduction.html
+      href: 00-introduction.html
     - text: "Getting Started"
-      href: 00-start.html
+      href: 01-start.html
     - text: "Working with the file system"
       href: 02-filesystem.html
     - text: "Working with files"
